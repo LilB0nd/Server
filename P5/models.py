@@ -1,6 +1,6 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
-
+# Models
 
 class Dish(models.Model):
     Appetizer = "Appetizer"
