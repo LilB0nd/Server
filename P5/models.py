@@ -42,8 +42,6 @@ class Dish(models.Model):
 # Create your models here.
 
 
-
-
 class Order(models.Model):
     Order_ID = models.AutoField(primary_key=True)
     Dish_list = models.ManyToManyField(Dish, through='Quantity')
@@ -59,8 +57,10 @@ class Order(models.Model):
         verbose_name_plural = "Bestellungen"
 
 
-
 class Quantity(models.Model):
-    Dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     Order = models.ForeignKey(Order, on_delete=models.CASCADE)
+    Dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     amount = models.IntegerField()
+
+    def __str__(self):
+        return "Bestellung " + str(self.Order.Order_ID) + "/ Gericht " + str(self.Dish) + " / Anzahl " + str(self.amount)

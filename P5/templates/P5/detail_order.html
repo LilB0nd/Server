@@ -1,0 +1,10 @@
+{% if detail_order  %}
+    <ul>
+    {{ detail_order }}
+    {% for Dish in dish_list %}
+      <p>  {{ Dish.Dish_Name }} {{ Dish.Dish_Price }}</p>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Gerichte are available.</p>
+{% endif %}
