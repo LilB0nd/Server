@@ -16,7 +16,7 @@ def detail_order(request, order_id):
     quantity = order_list.quantity_set.get_queryset()
     for element in quantity:
         print(element.Dish.Dish_Name)
-    print(quantity.Dish.Dish_Name)
+    #print(quantity.Dish.Dish_Name)
     print("")
     context = {'detail_order': order_list, 'dish_list': dish_of_order}
     """
