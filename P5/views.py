@@ -1,12 +1,19 @@
-from django.template import  loader
+from django.template import loader
 from django.http import HttpResponse
-
+from django.views import generic
 from .models import Dish, Order
 
 
+class OrderView(generic.ListView):
+    template_name = 'P5/order/order_list.html'
+    context_object_name = 'order_list'
+
+    def get_queryset(self):
+        return Order.objects.order_by('Order_ID')
+
 def detail_order(request, order_id):
     order_list = Order.objects.get(Order_ID=order_id)
-    template = loader.get_template('P5/detail_order.html')
+    template = loader.get_template('P5/order/detail_order.html')
     dish_of_order = order_list.Dish_list.all()
 
     #print(order_list.quantity_set.all())
@@ -30,5 +37,5 @@ def all_dishes(request):
 
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return HttpResponse("Yvo kann nichts")
 # Create your views here.
