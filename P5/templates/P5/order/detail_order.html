@@ -1,7 +1,8 @@
+
 {% if order  %}
     <ul>
-    {{ order }}
-    {% for Dish in dish_list %}
+    <strong>{{ order }}</strong>
+    {% for Dish in quantity %}
       <p>{{ Dish.amount }}x  {{ Dish.Dish.Dish_Name }} {{ Dish.Dish.Dish_Price }}</p>
     {% endfor %}
     </ul>

@@ -1,7 +1,7 @@
 from django.template import loader
 from django.http import HttpResponse
 from django.views import generic
-from .models import Dish, Order
+from .models import Dish, Order, Quantity
 
 
 class OrderView(generic.ListView):
@@ -9,9 +9,31 @@ class OrderView(generic.ListView):
     context_object_name = 'order_list'
 
     def get_queryset(self):
-        print("TEST")
         return Order.objects.order_by('Order_ID')
 
+
+class DetailOrderView(generic.DetailView):
+    template_name = 'P5/order/detail_order.html'
+    context_object_name = 'order'
+    model = Order
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        order = Order.objects.get(Order_ID=self.object.Order_ID)
+
+        print(order)
+        print(order.Table_Nr)
+        quantity = order.quantity_set.get_queryset()
+        print(quantity)
+
+        context['order'] = order
+        context['quantity'] = order.quantity_set.get_queryset()
+
+        return context
+
+
+
+"""
 def detail_order(request, order_id):
     order_list = Order.objects.get(Order_ID=order_id)
     template = loader.get_template('P5/order/detail_order.html')
@@ -31,7 +53,7 @@ def detail_order(request, order_id):
     context = {'dish_list': quantity, "order": order_list}
 
     return HttpResponse(template.render(context, request))
-
+"""
 
 def all_dishes(request):
     dish = Dish.objects.all()
