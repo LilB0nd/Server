@@ -31,8 +31,14 @@ class DetailOrderView(generic.DetailView):
 
         return context
 
-
-
+def beleg(request):
+    bestell = Order.Order_ID
+    price = "ToDo"
+    dish = "ToDo"
+    content:{
+        "bestNr" : bestell
+    }
+#ToDo
 """
 def detail_order(request, order_id):
     order_list = Order.objects.get(Order_ID=order_id)
