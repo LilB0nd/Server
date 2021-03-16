@@ -9,6 +9,7 @@ class OrderView(generic.ListView):
     context_object_name = 'order_list'
 
     def get_queryset(self):
+        print("TEST")
         return Order.objects.order_by('Order_ID')
 
 def detail_order(request, order_id):
@@ -18,6 +19,7 @@ def detail_order(request, order_id):
 
     #print(order_list.quantity_set.all())
     quantity = order_list.quantity_set.get_queryset()
+
 
     for element in quantity:
         print(element.amount)
