@@ -1,7 +1,7 @@
 from django.template import loader
 from django.http import HttpResponse
 from django.views import generic
-from .models import Dish, Order, Quantity
+from .models import Dish, Order, DishCategory, DishTyp
 
 
 class OrderView(generic.ListView):
