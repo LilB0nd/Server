@@ -1,7 +1,7 @@
 from django.template import loader
 from django.http import HttpResponse
 from django.views import generic
-from .models import Dish, Order, Quantity
+from .models import Dish, Order, DishCategory, DishTyp
 
 
 class OrderView(generic.ListView):
@@ -63,7 +63,11 @@ def detail_order(request, order_id):
 
 def all_dishes(request):
     dish = Dish.objects.all()
-    return HttpResponse(dish)
+    dish_cat = DishCategory.objects.all()
+    dish_typ = DishTyp.objects.all()
+    template = loader.get_template('P5/dishes.html')
+    context = {'dish_list': dish, 'dish_cat': dish_cat, 'dish_typ': dish_typ}
+    return HttpResponse(template.render(context, request))
 
 
 def index(request):

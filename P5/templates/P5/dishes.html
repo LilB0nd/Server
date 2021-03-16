@@ -1,1 +1,8 @@
-{{ dish_list }}
+{% for cat in dish_cat %}
+    <h1>{{ cat}}</h1>
+    <h1>{{ cat.id}}</h1>
+    <h2>{{ dish_typ }}</h2>
+
+
+{% endfor %}
+
