@@ -20,17 +20,17 @@ class DetailOrderView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         order = Order.objects.get(ID=self.object.ID)
-
-        print(order)
-        print(order.table_nr)
         quantity = order.quantity_set.get_queryset()
-        print(quantity)
 
         context['order'] = order
-        context['quantity'] = order.quantity_set.get_queryset()
+        context['quantity'] = quantity
 
         return context
 
+class DetailDishView(generic.DetailView):
+    template_name = 'P5/dish/detail_dish.html'
+    context_object_name = 'dish'
+    model = Dish
 
 
 """
@@ -83,6 +83,6 @@ def all_dishes(request):
 
 
 def index(request):
-    return HttpResponse("Yvo kann nichts")
+    return HttpResponse("Yvo kann absolut nichts")
 # Create your views here.
 
