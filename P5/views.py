@@ -57,8 +57,6 @@ def detail_order(request, order_id):
 
 def all_dishes(request):
     dishes = Dish.objects.all()
-    dish_cat = DishCategory.objects.all()
-    dish_typ = DishTyp.objects.all()
     list_of_dish_category = ()
     for dish in dishes:
         dish_category_id = dish.typ.dish_category.id
@@ -67,14 +65,20 @@ def all_dishes(request):
         else:
             list_of_dish_category = list_of_dish_category + (dish_category_id,)
 
-    sorted_dishes = {}
+    context = {}
+    list_of_category = []
     for id in list_of_dish_category:
         prin = Dish.objects.filter(typ__dish_category_id=id)
-        sorted_dishes[id] = prin
+        list_of_category.append(prin.first().typ.dish_category.category_name)
+        for each in prin:
+            #print(each)
+            context[each.typ.dish_category.category_name] = prin
+            #print(each.typ.typ_name)
+    #print(context)
+    context['type'] = list_of_category
 
-    print(sorted_dishes)
     template = loader.get_template('P5/dishes.html')
-    context = {'dish_list': dishes, 'dish_cat': dish_cat, 'dish_typ': dish_typ, 'sorted_dishes': sorted_dishes}
+
     return HttpResponse(template.render(context, request))
 
 
