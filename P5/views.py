@@ -9,7 +9,7 @@ class OrderView(generic.ListView):
     context_object_name = 'order_list'
 
     def get_queryset(self):
-        return Order.objects.order_by('Order_ID')
+        return Order.objects.order_by('ID')
 
 
 class DetailOrderView(generic.DetailView):
@@ -19,7 +19,7 @@ class DetailOrderView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        order = Order.objects.get(Order_ID=self.object.Order_ID)
+        order = Order.objects.get(ID=self.object.ID)
 
         print(order)
         print(order.Table_Nr)
@@ -56,11 +56,25 @@ def detail_order(request, order_id):
 """
 
 def all_dishes(request):
-    dish = Dish.objects.all()
+    dishes = Dish.objects.all()
     dish_cat = DishCategory.objects.all()
     dish_typ = DishTyp.objects.all()
+    list_of_dish_category = ()
+    for dish in dishes:
+        dish_category_id = dish.typ.dish_category.id
+        if dish_category_id in list_of_dish_category:
+            pass
+        else:
+            list_of_dish_category = list_of_dish_category + (dish_category_id,)
+
+    sorted_dishes = {}
+    for id in list_of_dish_category:
+        prin = Dish.objects.filter(typ__dish_category_id=id)
+        sorted_dishes[id] = prin
+
+    print(sorted_dishes)
     template = loader.get_template('P5/dishes.html')
-    context = {'dish_list': dish, 'dish_cat': dish_cat, 'dish_typ': dish_typ}
+    context = {'dish_list': dishes, 'dish_cat': dish_cat, 'dish_typ': dish_typ, 'sorted_dishes': sorted_dishes}
     return HttpResponse(template.render(context, request))
 
 
