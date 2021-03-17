@@ -2,8 +2,9 @@
 {% if order  %}
     <ul>
     <strong>{{ order }}</strong>
-    {% for Dish in quantity %}
-      <p>{{ Dish.amount }}x  {{ Dish.Dish.Dish_Name }} {{ Dish.Dish.Dish_Price }}</p>
+    <p> {{ order.table_nr }}</p>
+    {% for dish in quantity %}
+      <p>{{ dish.amount }}x  {{ dish.Dish.name }} {{ dish.Dish.price }}</p>
     {% endfor %}
     </ul>
 {% else %}

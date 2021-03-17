@@ -9,7 +9,7 @@ class OrderView(generic.ListView):
     context_object_name = 'order_list'
 
     def get_queryset(self):
-        return Order.objects.order_by('Order_ID')
+        return Order.objects.order_by('ID')
 
 
 class DetailOrderView(generic.DetailView):
@@ -19,15 +19,11 @@ class DetailOrderView(generic.DetailView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        order = Order.objects.get(Order_ID=self.object.Order_ID)
-
-        print(order)
-        print(order.Table_Nr)
+        order = Order.objects.get(ID=self.object.ID)
         quantity = order.quantity_set.get_queryset()
-        print(quantity)
 
         context['order'] = order
-        context['quantity'] = order.quantity_set.get_queryset()
+        context['quantity'] = quantity
 
         return context
 
@@ -54,22 +50,21 @@ def detail_order(request, order_id):
         print(element.Dish.Dish_Name)
         print(element.Dish.Dish_Price)
 
+class DetailDishView(generic.DetailView):
+    template_name = 'P5/dish/detail_dish.html'
+    context_object_name = 'dish'
+    model = Dish
 
 
-    context = {'dish_list': quantity, "order": order_list}
+class DishView(generic.ListView):
+    template_name = 'P5/dish/dish_list.html'
+    context_object_name = 'dish_list'
 
-    return HttpResponse(template.render(context, request))
-"""
-
-def all_dishes(request):
-    dish = Dish.objects.all()
-    dish_cat = DishCategory.objects.all()
-    dish_typ = DishTyp.objects.all()
-    template = loader.get_template('P5/dishes.html')
-    context = {'dish_list': dish, 'dish_cat': dish_cat, 'dish_typ': dish_typ}
-    return HttpResponse(template.render(context, request))
+    def get_queryset(self):
+        return Dish.objects.order_by('typ__dish_category')
 
 
 def index(request):
-    return HttpResponse("Yvo kann nichts")
+    return HttpResponse("Yvo  kann absolut nichts")
 # Create your views here.
+

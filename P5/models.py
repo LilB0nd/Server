@@ -43,8 +43,6 @@ class Dish(models.Model):
         verbose_name_plural = 'Gerichte'
 # Create your models here.
 
-
-
 class Table(models.Model):
     table_nr = models.IntegerField()
 
@@ -55,7 +53,7 @@ class Table(models.Model):
 class Order(models.Model):
     ID = models.AutoField(primary_key=True)
     dish_list = models.ManyToManyField(Dish, through='Quantity')
-    Table_Nr = models.ForeignKey(Table, on_delete=models.CASCADE)
+    table_nr = models.ForeignKey(Table, on_delete=models.CASCADE)
 
 
     def __str__(self):
