@@ -27,59 +27,22 @@ class DetailOrderView(generic.DetailView):
 
         return context
 
+
 class DetailDishView(generic.DetailView):
     template_name = 'P5/dish/detail_dish.html'
     context_object_name = 'dish'
     model = Dish
 
 
-"""
-def detail_order(request, order_id):
-    order_list = Order.objects.get(Order_ID=order_id)
-    template = loader.get_template('P5/order/detail_order.html')
-    dish_of_order = order_list.Dish_list.all()
+class DishView(generic.ListView):
+    template_name = 'P5/dish/dish_list.html'
+    context_object_name = 'dish_list'
 
-    #print(order_list.quantity_set.all())
-    quantity = order_list.quantity_set.get_queryset()
-
-
-    for element in quantity:
-        print(element.amount)
-        print(element.Dish.Dish_Name)
-        print(element.Dish.Dish_Price)
-
-
-
-    context = {'dish_list': quantity, "order": order_list}
-
-    return HttpResponse(template.render(context, request))
-"""
-
-
-def all_dishes(request):
-    dishes = Dish.objects.all()
-    dish_cat = DishCategory.objects.all()
-    dish_typ = DishTyp.objects.all()
-    list_of_dish_category = ()
-    for dish in dishes:
-        dish_category_id = dish.typ.dish_category.id
-        if dish_category_id in list_of_dish_category:
-            pass
-        else:
-            list_of_dish_category = list_of_dish_category + (dish_category_id,)
-
-    sorted_dishes = {}
-    for dish_id in list_of_dish_category:
-        prin = Dish.objects.filter(typ__dish_category_id=dish_id)
-        sorted_dishes[id] = prin
-
-    print(sorted_dishes)
-    template = loader.get_template('P5/order/templates/P5/dish/dishes.html')
-    context = {'dish_list': dishes, 'dish_cat': dish_cat, 'dish_typ': dish_typ, 'sorted_dishes': sorted_dishes}
-    return HttpResponse(template.render(context, request))
+    def get_queryset(self):
+        return Dish.objects.order_by('typ__dish_category')
 
 
 def index(request):
-    return HttpResponse("Yvo kann absolut nichts")
+    return HttpResponse("Yvo  kann absolut nichts")
 # Create your views here.
 
