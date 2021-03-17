@@ -22,7 +22,7 @@ class DetailOrderView(generic.DetailView):
         order = Order.objects.get(ID=self.object.ID)
 
         print(order)
-        print(order.Table_Nr)
+        print(order.table_nr)
         quantity = order.quantity_set.get_queryset()
         print(quantity)
 
@@ -81,3 +81,4 @@ def all_dishes(request):
 def index(request):
     return HttpResponse("Yvo kann nichts")
 # Create your views here.
+
