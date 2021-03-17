@@ -97,4 +97,4 @@ class DishView(generic.ListView):
 def index(request):
     return HttpResponse("Yvo kann absolut gar nichts")
 # Create your views here.
-
+#
