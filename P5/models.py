@@ -10,8 +10,9 @@ class DishCategory(models.Model):
         return str(self.category_name)
 
     class Meta:
-        verbose_name = 'Gerichtsvariate'
-        verbose_name_plural = 'Gerichtsvariaten'
+        verbose_name = 'Gerichtskategorie'
+        verbose_name_plural = 'Gerichtskategorien'
+
 
 
 class DishTyp(models.Model):
@@ -19,11 +20,12 @@ class DishTyp(models.Model):
     dish_category = models.ForeignKey(DishCategory, on_delete=models.SET_NULL, default=None, blank=True, null=True)
 
     def __str__(self):
-        return str(self.typ_name + ' / ' + self.dish_category.category_name)
+        return str(self.dish_category.category_name + ' / ' + self.typ_name)
 
     class Meta:
-        verbose_name = 'Gerichtskategorie'
-        verbose_name_plural = 'Gerichtskategorien'
+        verbose_name = 'Gerichtsvariate'
+        verbose_name_plural = 'Gerichtsvariaten'
+
 
 
 class Dish(models.Model):
