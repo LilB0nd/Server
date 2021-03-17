@@ -1,3 +1,4 @@
+from django.shortcuts import render
 from django.template import loader
 from django.http import HttpResponse
 from django.views import generic
@@ -27,14 +28,32 @@ class DetailOrderView(generic.DetailView):
 
         return context
 
+
+all_order_list = [('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10)]
+def rechner (all_order_list:list)-> float:
+
+    price = 0
+
+    for item in all_order_list:
+
+        price += item[1]*item[2]
+
+    return price
+
 def beleg(request):
-    bestell = Order.Order_ID
-    price = "ToDo"
-    dish = "ToDo"
-    content:{
-        "bestNr" : bestell
+
+    zwisch = rechner(all_order_list)
+    Mwst_not_rounded = (zwisch * 0.19)
+    Mwst = round(Mwst_not_rounded, 2)
+    gsmt_not_rounded = (zwisch + Mwst)
+    gmst = round(gsmt_not_rounded, 2)
+    content = {
+        'all_orders_list' : all_order_list,
+        'zwischen' : zwisch,
+        'mehrwert': Mwst,
+        'gesamt': gmst
     }
-#ToDo
+    return render(request, "P5/Rechnungen/belege.html", content)
 """
 def detail_order(request, order_id):
     order_list = Order.objects.get(Order_ID=order_id)
@@ -49,6 +68,7 @@ def detail_order(request, order_id):
         print(element.amount)
         print(element.Dish.Dish_Name)
         print(element.Dish.Dish_Price)
+"""
 
 class DetailDishView(generic.DetailView):
     template_name = 'P5/dish/detail_dish.html'
