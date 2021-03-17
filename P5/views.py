@@ -79,12 +79,22 @@ class DetailDishView(generic.DetailView):
 class DishView(generic.ListView):
     template_name = 'P5/dish/dish_list.html'
     context_object_name = 'dish_list'
+    model = Dish
 
-    def get_queryset(self):
-        return Dish.objects.order_by('typ__dish_category')
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        list_category = DishCategory.objects.all()
+        list_typ = DishTyp.objects.all()
+        dish_list = Dish.objects.order_by('typ__dish_category')
+
+        context['list_typ'] = list_typ
+        context['dish_list'] = dish_list
+        context['list_category'] = list_category
+
+        return context
 
 
 def index(request):
-    return HttpResponse("Yvo  kann absolut nichts")
+    return HttpResponse("Yvo kann absolut gar nichts")
 # Create your views here.
 
