@@ -110,3 +110,4 @@ class DishViewTEST(generic.ListView):
 
 def index(request):
     return HttpResponse("Yvo kann absolut gar nichts")
+# TEST
