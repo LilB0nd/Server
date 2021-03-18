@@ -86,9 +86,25 @@ class DishView(generic.ListView):
         list_category = DishCategory.objects.all()
         list_typ = DishTyp.objects.all()
         dish_list = Dish.objects.order_by('typ__dish_category')
+        sorted_dish_list = []
+        for typ in list_typ:
+
+            dish_list = typ.dish_set.get_queryset()
+            if not dish_list.count() == 0:
+                print(dish_list)
+                sorted_dish_list.append(dish_list)
+
+        print(sorted_dish_list)
+
+
+
+
+
+
+
 
         context['list_typ'] = list_typ
-        context['dish_list'] = dish_list
+        context['dish_list'] = sorted_dish_list
         context['list_category'] = list_category
 
         return context
