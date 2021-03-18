@@ -1,0 +1,29 @@
+
+<div class="container">
+        <header>
+            <div class="edi+tor-indent" style=" margin-right: 50px">
+                <div class="inner">
+                    <h2>Bestellungs Übersicht </h2>
+                </div>
+            </div>
+        </header>
+
+        <div class="whatever_else_you_need">
+            {% if order_list %}
+                {% for order in order_list %}
+                    <div class="list-group">
+                        <br>
+                        <h4 class="list-group-itemlist-group-item-action active">{{order}}</h4>
+                        <div>
+                            <a href='/P5/order/{{order.ID}}' class="btn btn-primary">Bestellung anzeigen</a>
+                        </div>
+
+                    </div>
+
+                {% endfor %}
+
+        </div>
+            {% else %}
+                <p>Keine Bestellungen vorhanden.</p>
+            {% endif %}
+    </div>

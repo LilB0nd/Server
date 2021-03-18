@@ -4,57 +4,64 @@ from djmoney.models.fields import MoneyField
 
 
 class DishCategory(models.Model):
-    DishCategory_name = models.CharField(max_length=99)
+    category_name = models.CharField(max_length=99)
 
     def __str__(self):
-        return str(self.DishCategory_name)
+        return str(self.category_name)
 
     class Meta:
-        verbose_name = "Gerichtsvariate"
-        verbose_name_plural = "Gerichtsvariaten"
+        verbose_name = 'Gerichtskategorie'
+        verbose_name_plural = 'Gerichtskategorien'
+
 
 
 class DishTyp(models.Model):
-    DishTyp_name = models.CharField(max_length=99)
-    Dish_Category = models.ForeignKey(DishCategory, on_delete=models.SET_NULL, default=None, blank=True, null=True)
+    typ_name = models.CharField(max_length=99)
+    dish_category = models.ForeignKey(DishCategory, on_delete=models.SET_NULL, default=None, blank=True, null=True)
 
     def __str__(self):
-        return str(self.DishTyp_name + " / " + self.Dish_Category.DishCategory_name)
+        return str(self.dish_category.category_name + ' / ' + self.typ_name)
 
     class Meta:
-        verbose_name = "Gerichtskategorie"
-        verbose_name_plural = "Gerichtskategorien"
+        verbose_name = 'Gerichtsvariate'
+        verbose_name_plural = 'Gerichtsvariaten'
+
 
 
 class Dish(models.Model):
-    Dish_ID = models.AutoField(primary_key=True)
-    Dish_Typ = models.ForeignKey(DishTyp, on_delete=models.SET_NULL, default=None, blank=True, null=True)
-    Dish_Name = models.CharField(max_length=99)
-    Dish_Description = models.TextField(max_length=512, blank=True)
-    Dish_Price = MoneyField(max_digits=9, decimal_places=2, default_currency="EUR")
+    ID = models.AutoField(primary_key=True)
+    typ = models.ForeignKey(DishTyp, on_delete=models.SET_NULL, default=None, blank=True, null=True)
+    name = models.CharField(max_length=99)
+    description = models.TextField(max_length=512, blank=True)
+    price = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR')
 
     def __str__(self):
-        return str(self.Dish_Name)
+        return str(self.name)
 
     class Meta:
-        verbose_name = "Gericht"
-        verbose_name_plural = "Gerichte"
+        verbose_name = 'Gericht'
+        verbose_name_plural = 'Gerichte'
 # Create your models here.
+
+class Table(models.Model):
+    table_nr = models.IntegerField()
+
+    def __str__(self):
+        return 'Tisch ' + str(self.table_nr)
 
 
 class Order(models.Model):
-    Order_ID = models.AutoField(primary_key=True)
-    Dish_list = models.ManyToManyField(Dish, through='Quantity')
-    table_nr_choice = [("table_1", "Tisch 1"), ('table_2', "Tisch 2"), ('table_3', "Tisch 3")]
-    Table_Nr = models.CharField(choices=table_nr_choice, max_length=10, default=None)
+    ID = models.AutoField(primary_key=True)
+    dish_list = models.ManyToManyField(Dish, through='Quantity')
+    table_nr = models.ForeignKey(Table, on_delete=models.CASCADE)
 
 
     def __str__(self):
-        return "Bestellung " + str(self.Order_ID)
+        return 'Bestellung ' + str(self.ID)
 
     class Meta:
-        verbose_name = "Bestellung"
-        verbose_name_plural = "Bestellungen"
+        verbose_name = 'Bestellung'
+        verbose_name_plural = 'Bestellungen'
 
 
 class Quantity(models.Model):
@@ -63,4 +70,4 @@ class Quantity(models.Model):
     amount = models.IntegerField()
 
     def __str__(self):
-        return "Bestellung " + str(self.Order.Order_ID) + "/ Gericht " + str(self.Dish) + " / Anzahl " + str(self.amount)
+        return 'Bestellung ' + str(self.Order.ID) + '/ '  + str(self.amount) + 'x '+ str(self.Dish)

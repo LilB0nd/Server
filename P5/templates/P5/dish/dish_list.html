@@ -1,0 +1,15 @@
+{% for category in list_category %}
+    <h3><strong>{{ category }}</strong></h3>
+    {% for typ in list_typ %}
+        {% if category == typ.dish_category %}
+            <h4><strong>{{ typ.typ_name }}</strong></h4>
+        {% endif %}
+            {% for dish in dish_list %}
+                {% if dish.typ.dish_category == category %}
+                    {% if dish.typ.typ_name == typ.typ_name %}
+                        <a href='/P5/dish/{{dish.ID}}' class="btn btn-primary">{{ dish.name }}</a>
+                    {% endif %}
+                {% endif %}
+            {% endfor %}
+    {% endfor %}
+{% endfor %}

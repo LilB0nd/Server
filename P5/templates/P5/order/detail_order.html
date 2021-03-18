@@ -1,0 +1,12 @@
+
+{% if order  %}
+    <ul>
+    <strong>{{ order }}</strong>
+    <p> {{ order.table_nr }}</p>
+    {% for dish in quantity %}
+      <p>{{ dish.amount }}x  {{ dish.Dish.name }} {{ dish.Dish.price }}</p>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No Gerichte are available.</p>
+{% endif %}
