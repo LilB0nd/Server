@@ -7,8 +7,6 @@ from email import encoders  # email
 
 
 class Receipt:
-    def __init__(self):
-        self.receipt = open("Beleg.html", "w+b")
 
     def converttopdf(self):
         result_file = open("Beleg.pdf", "w+b")
@@ -23,9 +21,6 @@ class Receipt:
 
         # return False on success and True on errors
         return pisa_status.err
-
-    def closedata(self):
-        self.receipt.close()
 
 
 class Mail:
@@ -63,4 +58,3 @@ class Mail:
 YOS = Receipt()
 YOS.converttopdf()
 NOS = Mail("yvo2@schule.bremen.de")
-YOS.closedata()
