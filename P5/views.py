@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.views import generic
-from .models import Dish, Order, DishCategory, DishTyp, Quantity, Table
+from .models import Dish, Order, DishCategory, DishTyp, OrderDetail
 
 
 class OrderView(generic.ListView):
@@ -57,8 +57,6 @@ def beleg(request):
 
 class DetailDishView(generic.DetailView):
     template_name = 'P5/dish/detail_dish.html'
-    context_object_name = 'dish'
-    model = Dish
 
 
 
@@ -92,7 +90,7 @@ class DishViewTEST(generic.ListView):
 
     def post(self, request, *args, **kwargs):
         new_order = Order()
-        new_order.table_nr = Table.objects.first()
+        new_order.table_nr = 1
         last_order_id = Order.objects.last().ID
         new_order.id = last_order_id + 1
         new_order.save()
@@ -100,7 +98,7 @@ class DishViewTEST(generic.ListView):
         for dish in Dish.objects.all():
             dish_id = dish.ID
             dish = self.request.POST[str(dish.ID) + ':amount']
-            new_quantity = Quantity()
+            new_quantity = OrderDetail()
             new_quantity.Order = Order.objects.get(ID=new_order.id)
             new_quantity.Dish = Dish.objects.get(ID=dish_id)
             new_quantity.amount = dish
@@ -108,6 +106,6 @@ class DishViewTEST(generic.ListView):
 
         return redirect('P5:DetailOrderView', pk=new_order.id)
 
+
 def index(request):
-    return HttpResponse("Yvo kann absolut gar nichts")
-# TEST
+    return HttpResponse("Yvo kann immer noch absolut gar nichts")

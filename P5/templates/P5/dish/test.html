@@ -1,7 +1,7 @@
 <form method="post">
 {% for dish in dish_list %}
     <p>{{ dish.name }} {{ dish.ID }}</p>
-
+    <img src="{{ dish.image.url }}" alt="img">
     {% csrf_token %}
         <input type="number" value="0" name="{{dish.ID}}:amount" min="0">
 
