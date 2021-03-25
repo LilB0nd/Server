@@ -1,10 +1,13 @@
 from django.shortcuts import render
 from django.template.loader import get_template
+from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.views import generic, View
 from io import BytesIO
 from xhtml2pdf import pisa
 from .models import Dish, Order, DishCategory, DishTyp
+from django.views import generic
+from .models import Dish, Order, DishCategory, DishTyp, Quantity, Table
 
 
 def render_to_pdf(template_src, context_dict: dict):
@@ -59,34 +62,31 @@ class DetailOrderView(generic.DetailView):
         return context
 
 
-all_order_list = [('Suppe', 3, 10), ('Suppe', 3, 10), ('Suppe', 3, 10), ('Suppe', 3, 10), ('Suppe', 3, 10),
-                  ('Suppe', 3, 10)]
+all_order_list = [('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10)]
+def rechner (all_order_list:list)-> float:
 
-
-def rechner(all_order_list: list) -> float:
     price = 0
 
     for item in all_order_list:
-        price += item[1] * item[2]
+
+        price += item[1]*item[2]
 
     return price
 
-
 def beleg(request):
+
     zwisch = rechner(all_order_list)
     Mwst_not_rounded = (zwisch * 0.19)
     Mwst = round(Mwst_not_rounded, 2)
     gsmt_not_rounded = (zwisch + Mwst)
     gmst = round(gsmt_not_rounded, 2)
     content = {
-        'all_orders_list': all_order_list,
-        'zwischen': zwisch,
+        'all_orders_list' : all_order_list,
+        'zwischen' : zwisch,
         'mehrwert': Mwst,
         'gesamt': gmst
     }
     return render(request, "P5/Rechnungen/belege.html", content)
-
-
 """
 def detail_order(request, order_id):
     order_list = Order.objects.get(Order_ID=order_id)
@@ -103,11 +103,11 @@ def detail_order(request, order_id):
         print(element.Dish.Dish_Price)
 """
 
-
 class DetailDishView(generic.DetailView):
     template_name = 'P5/dish/detail_dish.html'
     context_object_name = 'dish'
     model = Dish
+
 
 
 class DishView(generic.ListView):
@@ -120,6 +120,11 @@ class DishView(generic.ListView):
         list_category = DishCategory.objects.all()
         list_typ = DishTyp.objects.all()
         dish_list = Dish.objects.order_by('typ__dish_category')
+        for category in list_category:
+            list_typ = category.dishtyp_set.get_queryset()
+            for typ in list_typ:
+                dish_list = typ.dish_set.get_queryset()
+                print(dish_list)
 
         context['list_typ'] = list_typ
         context['dish_list'] = dish_list
@@ -128,6 +133,29 @@ class DishView(generic.ListView):
         return context
 
 
+class DishViewTEST(generic.ListView):
+    template_name = 'P5/dish/test.html'
+    context_object_name = 'dish_list'
+    model = Dish
+
+    def post(self, request, *args, **kwargs):
+        new_order = Order()
+        new_order.table_nr = Table.objects.first()
+        last_order_id = Order.objects.last().ID
+        new_order.id = last_order_id + 1
+        new_order.save()
+
+        for dish in Dish.objects.all():
+            dish_id = dish.ID
+            dish = self.request.POST[str(dish.ID) + ':amount']
+            new_quantity = Quantity()
+            new_quantity.Order = Order.objects.get(ID=new_order.id)
+            new_quantity.Dish = Dish.objects.get(ID=dish_id)
+            new_quantity.amount = dish
+            new_quantity.save()
+
+        return redirect('P5:DetailOrderView', pk=new_order.id)
+
 def index(request):
     return HttpResponse("Yvo kann absolut gar nichts")
-# Create your views here.
+# TEST
