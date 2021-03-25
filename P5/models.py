@@ -1,5 +1,6 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
+from datetime import datetime
 # Models
 
 
@@ -46,6 +47,7 @@ class Dish(models.Model):
 class Order(models.Model):
     ID = models.AutoField(primary_key=True)
     dish_list = models.ManyToManyField(Dish, through='P5.OrderDetail')
+    date = models.DateField(default=datetime.now())
     table_nr = models.IntegerField()
 
     def __str__(self):
