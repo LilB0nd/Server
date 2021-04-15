@@ -1,14 +1,11 @@
-{{ quantity }}
+
 {% if order  %}
     <ul>
     <strong>{{ order }}</strong>
     <p> {{ order.table_nr }}</p>
     {% for dish in quantity %}
-        {% if dish.amount == 0 %}
-
-        {% else %}
-      <p>{{ dish.amount }}x  {{ dish.Dish.name }} {{ dish.Dish.price }}</p>
-        {% endif %}
+      <p><input type="number" value={{ dish.amount }} name="amount" min="1">{{ dish.Dish.name }} {{ dish.Dish.price }}</p>
+        {% csrf_token %}
     {% endfor %}
     </ul>
 {% else %}

@@ -54,26 +54,13 @@ def beleg(request):
         'gesamt': gmst
     }
     return render(request, "P5/Rechnungen/belege.html", content)
-"""
-def detail_order(request, order_id):
-    order_list = Order.objects.get(Order_ID=order_id)
-    template = loader.get_template('P5/order/detail_order.html')
-    dish_of_order = order_list.Dish_list.all()
 
-    #print(order_list.quantity_set.all())
-    quantity = order_list.quantity_set.get_queryset()
-
-
-    for element in quantity:
-        print(element.amount)
-        print(element.Dish.Dish_Name)
-        print(element.Dish.Dish_Price)
-"""
 
 class DetailDishView(generic.DetailView):
     template_name = 'P5/dish/detail_dish.html'
     context_object_name = 'dish'
     model = Dish
+
 
 
 class DishView(generic.ListView):
@@ -86,25 +73,14 @@ class DishView(generic.ListView):
         list_category = DishCategory.objects.all()
         list_typ = DishTyp.objects.all()
         dish_list = Dish.objects.order_by('typ__dish_category')
-        sorted_dish_list = []
-        for typ in list_typ:
-
-            dish_list = typ.dish_set.get_queryset()
-            if not dish_list.count() == 0:
+        for category in list_category:
+            list_typ = category.dishtyp_set.get_queryset()
+            for typ in list_typ:
+                dish_list = typ.dish_set.get_queryset()
                 print(dish_list)
-                sorted_dish_list.append(dish_list)
-
-        print(sorted_dish_list)
-
-
-
-
-
-
-
 
         context['list_typ'] = list_typ
-        context['dish_list'] = sorted_dish_list
+        context['dish_list'] = dish_list
         context['list_category'] = list_category
 
         return context

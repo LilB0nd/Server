@@ -14,7 +14,6 @@ class DishCategory(models.Model):
         verbose_name_plural = 'Gerichtskategorien'
 
 
-
 class DishTyp(models.Model):
     typ_name = models.CharField(max_length=99)
     dish_category = models.ForeignKey(DishCategory, on_delete=models.SET_NULL, default=None, blank=True, null=True)
@@ -25,7 +24,6 @@ class DishTyp(models.Model):
     class Meta:
         verbose_name = 'Gerichtsvariate'
         verbose_name_plural = 'Gerichtsvariaten'
-
 
 
 class Dish(models.Model):

@@ -1,2 +1,4 @@
 {{ dish }}
 <p>Preis: {{ dish.price }}</p>
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
