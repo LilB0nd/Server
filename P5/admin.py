@@ -5,11 +5,12 @@ class OrderAdmin(admin.ModelAdmin):
     model = Order
     filter_horizontal = ('Gericht',)
 """
-admin.site.register(OrderDetail)
+#admin.site.register(OrderDetail)
 admin.site.register(Dish)
 admin.site.register(DishTyp)
 admin.site.register(DishCategory)
 admin.site.register(Order)
+admin.site.register(Sales)
 
 
 

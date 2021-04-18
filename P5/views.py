@@ -1,11 +1,11 @@
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.views import generic
-from .models import Dish, Order, DishCategory, DishTyp, OrderDetail
+from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales
 
 
 class OrderView(generic.ListView):
-    template_name = 'P5/order/order_list.html'
+    template_name = 'P5/staffsite/order/order_list.html'
     context_object_name = 'order_list'
 
     def get_queryset(self):
@@ -13,14 +13,14 @@ class OrderView(generic.ListView):
 
 
 class DetailOrderView(generic.DetailView):
-    template_name = 'P5/order/detail_order.html'
+    template_name = 'P5/staffsite/order/detail_order.html'
     context_object_name = 'order'
     model = Order
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         order = Order.objects.get(ID=self.object.ID)
-        quantity = order.quantity_set.get_queryset()
+        quantity = order.orderdetail_set.get_queryset()
 
         context['order'] = order
         context['quantity'] = quantity
@@ -59,7 +59,6 @@ class DetailDishView(generic.DetailView):
     template_name = 'P5/dish/detail_dish.html'
 
 
-
 class DishView(generic.ListView):
     template_name = 'P5/dish/dish_list.html'
     context_object_name = 'dish_list'
@@ -89,23 +88,55 @@ class DishViewTEST(generic.ListView):
     model = Dish
 
     def post(self, request, *args, **kwargs):
-        new_order = Order()
-        new_order.table_nr = 1
-        last_order_id = Order.objects.last().ID
-        new_order.id = last_order_id + 1
-        new_order.save()
+        self.create_new_order()
+        self.set_dishes_for_order()
+        return redirect('P5:DetailOrderView', pk=self.new_order.id)
 
+    def create_new_order(self):
+        self.new_order = Order()
+        self.new_order.table_nr = 1
+        try:
+            last_order_id = Order.objects.last().ID
+            self.new_order.id = last_order_id + 1
+        except AttributeError:
+            self.new_order.id = 1
+        self.new_order.save()
+
+    def set_dishes_for_order(self):
         for dish in Dish.objects.all():
             dish_id = dish.ID
-            dish = self.request.POST[str(dish.ID) + ':amount']
-            new_quantity = OrderDetail()
-            new_quantity.Order = Order.objects.get(ID=new_order.id)
-            new_quantity.Dish = Dish.objects.get(ID=dish_id)
-            new_quantity.amount = dish
-            new_quantity.save()
+            amount = int(self.request.POST[str(dish.ID) + ':amount'])
+            print(amount)
+            if amount != 0:
+                print('SAVe')
+                new_quantity = OrderDetail()
+                self.save_statistic(dish, amount)
+                new_quantity.Order = Order.objects.get(ID=self.new_order.id)
+                new_quantity.Dish = Dish.objects.get(ID=dish_id)
+                new_quantity.amount = amount
+                new_quantity.save()
 
-        return redirect('P5:DetailOrderView', pk=new_order.id)
+    def save_statistic(self, dish, amount):
+        try:
+            dish_stats = Sales.objects.get(Dish=dish)
+            dish_amount = dish_stats.amount
+            dish_stats.amount = dish_amount + dish_amount
+            dish_stats.save()
+
+        except Sales.DoesNotExist:
+            new_dish_stat = Sales()
+            new_dish_stat.Dish = dish
+            new_dish_stat.amount = amount
+            new_dish_stat.save()
+
+
+
+class SalesStatisticsView(generic.ListView):
+    template_name = 'P5/staffsite/Sales/all_stats.html'
+    context_object_name = 'stats'
+    model = Sales
+
 
 
 def index(request):
-    return HttpResponse("Yvo kann immer noch absolut gar nichts")
+    return HttpResponse('<a href="/P5/staffsite/order/"> Bestellungen</a><a href="/P5/dishtest/"> Gerichte bestellen</a><a href="/P5/staffsite/statistics/"> Statistics</a>')

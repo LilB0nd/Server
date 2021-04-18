@@ -1,6 +1,6 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
-from datetime import datetime
+from django.utils import timezone
 # Models
 
 
@@ -45,10 +45,11 @@ class Dish(models.Model):
 
 
 class Order(models.Model):
-    ID = models.AutoField(primary_key=True)
+    ID = models.IntegerField(primary_key=True, unique=True)
     dish_list = models.ManyToManyField(Dish, through='P5.OrderDetail')
-    date = models.DateField(default=datetime.now())
+    date = models.DateField(default=timezone.now)
     table_nr = models.IntegerField()
+    #status = models.Choices()
 
     def __str__(self):
         return 'Bestellung ' + str(self.ID)
@@ -71,3 +72,8 @@ class Sales(models.Model):
     Dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     amount = models.IntegerField()
 
+    def __str__(self):
+        return self.Dish.name
+
+    class Meta:
+        verbose_name = 'Sale'
