@@ -1,5 +1,6 @@
 from django.db import models
 from djmoney.models.fields import MoneyField
+from django.utils import timezone
 # Models
 
 
@@ -32,6 +33,7 @@ class Dish(models.Model):
     name = models.CharField(max_length=99)
     description = models.TextField(max_length=512, blank=True)
     price = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR')
+    image = models.ImageField(blank=True, null=True)
 
     def __str__(self):
         return str(self.name)
@@ -41,18 +43,13 @@ class Dish(models.Model):
         verbose_name_plural = 'Gerichte'
 # Create your models here.
 
-class Table(models.Model):
-    table_nr = models.IntegerField()
-
-    def __str__(self):
-        return 'Tisch ' + str(self.table_nr)
-
 
 class Order(models.Model):
-    ID = models.AutoField(primary_key=True)
-    dish_list = models.ManyToManyField(Dish, through='Quantity')
-    table_nr = models.ForeignKey(Table, on_delete=models.CASCADE)
-
+    ID = models.IntegerField(primary_key=True, unique=True)
+    dish_list = models.ManyToManyField(Dish, through='P5.OrderDetail')
+    date = models.DateField(default=timezone.now)
+    table_nr = models.IntegerField()
+    #status = models.Choices()
 
     def __str__(self):
         return 'Bestellung ' + str(self.ID)
@@ -62,10 +59,21 @@ class Order(models.Model):
         verbose_name_plural = 'Bestellungen'
 
 
-class Quantity(models.Model):
+class OrderDetail(models.Model):
     Order = models.ForeignKey(Order, on_delete=models.CASCADE)
     Dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
     amount = models.IntegerField()
 
     def __str__(self):
-        return 'Bestellung ' + str(self.Order.ID) + '/ '  + str(self.amount) + 'x '+ str(self.Dish)
+        return 'Bestellung ' + str(self.Order.ID) + '/ ' + str(self.amount) + 'x ' + str(self.Dish)
+
+
+class Sales(models.Model):
+    Dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
+    amount = models.IntegerField()
+
+    def __str__(self):
+        return self.Dish.name
+
+    class Meta:
+        verbose_name = 'Sale'

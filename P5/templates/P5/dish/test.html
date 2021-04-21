@@ -1,11 +1,13 @@
 <form method="post">
 {% for dish in dish_list %}
-    <p>{{ dish.name }} {{ dish.ID }}</p>
-
+    <h3>{{ dish.name }} {{ dish.ID }}</h3>
+    <img src="{{ dish.image.url }}" alt="dish_img", width="350" height="200">
+    <br>
     {% csrf_token %}
         <input type="number" value="0" name="{{dish.ID}}:amount" min="0">
 
 
 {% endfor %}
+<br>
 <button type="submit" name="dish" value={{ dish.price }}>Hinzufügen</button>
 </form>

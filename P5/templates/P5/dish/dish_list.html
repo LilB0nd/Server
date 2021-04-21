@@ -1,14 +1,29 @@
-{% for category in list_category %}
-    <h3><strong>{{ category }}</strong></h3>
-    {% for typ in list_typ %}
-        {% if category == typ.dish_category %}
-            <h4><strong>{{ typ.typ_name }}</strong></h4>
-        {% endif %}
-            {% for dish in dish_list %}
-                {% if dish.typ.dish_category == category %}
-                    {% if dish.typ.typ_name == typ.typ_name %}
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+<div class="search-bar">
+    {% for category in list_category%}
+     <a href="#{{ category}}">{{ category}}</a>
     {% endfor %}
-{% endfor %}
+</div>
+<div class="menu">
+    {%for category in list_category %}
+        <h1 id="{{ category }}">{{ category }}</h1>
+        {% for dish in dish_list %}
+            {% if dish.typ.dish_category == category%}
+                <div class="typ">
+                    <h2>{{ dish.typ.typ_name }}</h2>
+                    {% for typ in dish_list  %}
+                        {% if typ.typ.typ_name == dish.typ.typ_name %}
+                            <div class="dish">
+                            <h3>{{ typ.name }}</h3>
+                            <p>{{ typ.description }}</p>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+            {% endif %}
+
+        {% endfor %}
+    {% endfor %}
+</div>
+
+
