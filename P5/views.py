@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import generic
 from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales
@@ -85,6 +85,11 @@ class DishView(generic.ListView):
         context['list_category'] = list_category
 
         return context
+
+class CartView(generic.ListView):
+    template_name = 'P5/dish/cart.html'
+    context_object_name = 'dish_list'
+    model = Dish
 
 
 class DishViewTEST(generic.ListView):
