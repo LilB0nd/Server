@@ -69,6 +69,8 @@ class DishView(generic.ListView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
+        table_id = self.request.GET.get('table_id')
+        print(table_id)
         list_category = []
         list_typ = DishTyp.objects.all()
         dish_list = Dish.objects.order_by('typ__dish_category')
@@ -88,8 +90,19 @@ class DishView(generic.ListView):
 
 class CartView(generic.ListView):
     template_name = 'P5/dish/cart.html'
-    context_object_name = 'dish_list'
-    model = Dish
+    context_object_name = 'order'
+    model = Order
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        order_id = self.request.GET.get('order_id')
+        order = Order.objects.get(ID=order_id)
+        quantity = order.orderdetail_set.get_queryset()
+        print('TEST')
+        context['quantity'] = quantity
+        context['order'] = order
+
+        return context
 
 
 class DishViewTEST(generic.ListView):
