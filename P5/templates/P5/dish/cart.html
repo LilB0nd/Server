@@ -8,7 +8,7 @@
 {% if order  %}
     <ul>
     <strong>{{ order }}</strong>
-    <p>Tischnummer: {{ order.table_nr }}</p>
+    <p>Tischnummer: {{ order.table_id}}</p>
     {% for dish in quantity %}
         {% if dish.amount == 0 %}
 

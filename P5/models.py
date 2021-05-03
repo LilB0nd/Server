@@ -5,7 +5,7 @@ from django.utils import timezone
 
 
 class DishCategory(models.Model):
-    category_name = models.CharField(max_length=99)
+    category_name = models.CharField(max_length=99, verbose_name='Gerichtskategorie')
 
     def __str__(self):
         return str(self.category_name)
@@ -16,11 +16,12 @@ class DishCategory(models.Model):
 
 
 class DishTyp(models.Model):
-    typ_name = models.CharField(max_length=99)
-    dish_category = models.ForeignKey(DishCategory, on_delete=models.SET_NULL, default=None, blank=True, null=True)
+    typ_name = models.CharField(max_length=99, verbose_name='Gerichtsvariate')
+    dish_category = models.ForeignKey(DishCategory, on_delete=models.CASCADE, verbose_name='Gerichtskategorie',
+                                      null=True)
 
     def __str__(self):
-        return str(self.dish_category.category_name + ' / ' + self.typ_name)
+        return self.typ_name
 
     class Meta:
         verbose_name = 'Gerichtsvariate'
@@ -41,31 +42,65 @@ class Dish(models.Model):
     class Meta:
         verbose_name = 'Gericht'
         verbose_name_plural = 'Gerichte'
-# Create your models here.
 
 
 class Order(models.Model):
-    ID = models.IntegerField(primary_key=True, unique=True)
     dish_list = models.ManyToManyField(Dish, through='P5.OrderDetail')
-    date = models.DateField(default=timezone.now)
-    table_nr = models.IntegerField()
-    #status = models.Choices()
+    table_id = models.IntegerField(primary_key=True, unique=True)
+    confirmation = models.BooleanField(default=False)
 
     def __str__(self):
-        return 'Bestellung ' + str(self.ID)
+        return 'Tisch ' + str(self.table_id)
 
     class Meta:
-        verbose_name = 'Bestellung'
-        verbose_name_plural = 'Bestellungen'
+        verbose_name = 'offene Bestellung'
+        verbose_name_plural = 'offene Bestellungen'
 
 
 class OrderDetail(models.Model):
-    Order = models.ForeignKey(Order, on_delete=models.CASCADE)
-    Dish = models.ForeignKey(Dish, on_delete=models.CASCADE)
-    amount = models.IntegerField()
+    Order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Bestellung')
+    Dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='Gericht')
+    amount = models.IntegerField(verbose_name='Anzahl')
 
     def __str__(self):
-        return 'Bestellung ' + str(self.Order.ID) + '/ ' + str(self.amount) + 'x ' + str(self.Dish)
+        return 'Bestellung ' +str(self.Order.table_id) + ' / ' + str(self.Dish.name)
+
+
+    class Meta:
+        verbose_name = 'Bestellungsdetail'
+
+
+class Bill(models.Model):
+    ID = models.AutoField(primary_key=True, verbose_name='Rechnungsnummer')
+    table_nr = models.IntegerField(verbose_name='Tischnummer',)
+    dish_list = models.ManyToManyField(Dish, through='P5.BillDetail')
+    date = models.DateField(default=timezone.now)
+
+    currency = (('EUR', 'EURO €'),)
+    total_price_brutto = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
+                                    verbose_name='Gesamtsumme')
+    given = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
+                       verbose_name='Übergeben')
+    tip = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
+                     null=True, blank=True, verbose_name='Trinkgeld')
+    change = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
+                        verbose_name='Trinkgeld')
+
+    def __str__(self):
+        return 'Rechnung' + str(self.ID)
+
+    class Meta:
+        verbose_name = 'Rechnung'
+        verbose_name_plural = 'Rechnungen'
+
+
+class BillDetail(models.Model):
+    Bill = models.ForeignKey(Bill, on_delete=models.CASCADE, verbose_name='Bestellung')
+    Dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='Gericht')
+    amount = models.IntegerField(verbose_name='Anzahl')
+
+    def __str__(self):
+        return 'Rechnung ' + str(self.Bill.ID) + ' / ' + str(self.Dish.name)
 
 
 class Sales(models.Model):
@@ -76,4 +111,6 @@ class Sales(models.Model):
         return self.Dish.name
 
     class Meta:
-        verbose_name = 'Sale'
+        verbose_name = 'Verkaufe/Statistik'
+        verbose_name_plural = 'Verkaufe/Statistik'
+        ordering = ['amount']

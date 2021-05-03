@@ -25,30 +25,40 @@
     <
 </div>
 <div class="menu">
+
     {%for category in list_category %}
         <h1 class="category" id="{{ category }}">{{ category }}</h1>
         {% for dish in dish_list %}
             {% if dish.typ.dish_category == category%}
                 <div class="typ">
                     <h2>{{ dish.typ.typ_name }}</h2>
+
                     {% for typ in dish_list  %}
                         {% if typ.typ.typ_name == dish.typ.typ_name %}
                             <div class="dish">
                             <h3>{{ typ.name }}</h3>
-                                <img src="{{ typ.image.url }}" alt="dish_img", width="350" height="200">
+                                {%  if typ.image %}
+                                <img src="{{ typ.image.url }}" alt="dish_img" width="350" height="200">
+                                {% endif %}
                             <p>{{ typ.description }}</p>
                             <p>{{ typ.price }}</p>
-
+                                <form  action="" method="post">
+                            {% csrf_token %}
+                            <button type="submit" name="dish_name" value={{ dish.ID }}>Hinzufügen</button>
+                            </form>
 
                             </div>
                         {% endif %}
                     {% endfor %}
+
 
                 </div>
             {% endif %}
 
         {% endfor %}
     {% endfor %}
+
+
 </div>
 
 
