@@ -105,7 +105,6 @@ AUTH_PASSWORD_VALIDATORS = [
 
 # Admin Order
 ADMIN_REORDER = (
-
     {'app': 'P5', 'label': 'Bestellungen', 'models': ('P5.Order',)},
     {'app': 'P5', 'label': 'Rechnungen', 'models': ('P5.Bill',)},
     {'app': 'P5', 'label': 'Gerichte', 'models': ('P5.Dish', 'P5.DishTyp', 'P5.DishCategory')},
