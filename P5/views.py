@@ -56,11 +56,6 @@ def beleg(request):
     return render(request, "P5/Rechnungen/belege.html", content)
 
 
-class DetailDishView(generic.DetailView):
-    template_name = 'P5/dish/detail_dish.html'
-    context_object_name = 'dish'
-    model = Dish
-
 class DishView(generic.ListView):
     template_name = 'P5/dish/dish_list.html'
     context_object_name = 'dish_list'
@@ -106,18 +101,19 @@ class DishView(generic.ListView):
         order = Order.objects.get(table_id=self.table_id)
         dish_id = int(self.request.POST['dish_name'])
         dish_list = order.orderdetail_set.all()
-        print('ERROR')
+
         try:
-            print('TRY ERROR')
+            print('ERROR')
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
-            print('TRY ERROR')
             order_dish.amount = order_dish.amount + 1
             order_dish.save()
 
-        except Dish.DoesNotExist or OrderDetail.DoesNotExist:
-            print('ERROR')
+        except Exception as Error:
+            print(Error)
+            print()
+            print()
             new_dish_to_order = OrderDetail()
-            new_dish_to_order.Order = self.table_id
+            new_dish_to_order.Order = Order.objects.get(table_id=self.table_id)
             new_dish_to_order.Dish = Dish.objects.get(ID=dish_id)
             new_dish_to_order.amount = 1
             new_dish_to_order.save()
@@ -149,6 +145,7 @@ class CartView(generic.DetailView):
         context['quantity'] = quantity
 
         return context
+
 
 class SalesStatisticsView(generic.ListView):
     template_name = 'P5/staffsite/Sales/all_stats.html'
