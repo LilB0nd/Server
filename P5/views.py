@@ -5,30 +5,6 @@ from django.views import generic
 from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales
 
 
-class OrderView(generic.ListView):
-    template_name = 'P5/staffsite/order/order_list.html'
-    context_object_name = 'order_list'
-
-    def get_queryset(self):
-        return Order.objects.order_by('table_id')
-
-
-class DetailOrderView(generic.DetailView):
-    template_name = 'P5/staffsite/order/detail_order.html'
-    context_object_name = 'order'
-    model = Order
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        order = Order.objects.get(table_id=self.object.table_id)
-        quantity = order.orderdetail_set.get_queryset()
-
-        context['order'] = order
-        context['quantity'] = quantity
-
-        return context
-
-
 all_order_list = [('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10)]
 def rechner (all_order_list:list)-> float:
 
@@ -103,15 +79,11 @@ class DishView(generic.ListView):
         dish_list = order.orderdetail_set.all()
 
         try:
-            print('ERROR')
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
             order_dish.save()
 
-        except Exception as Error:
-            print(Error)
-            print()
-            print()
+        except Dish.DoesNotExist:
             new_dish_to_order = OrderDetail()
             new_dish_to_order.Order = Order.objects.get(table_id=self.table_id)
             new_dish_to_order.Dish = Dish.objects.get(ID=dish_id)
@@ -145,12 +117,6 @@ class CartView(generic.DetailView):
         context['quantity'] = quantity
 
         return context
-
-
-class SalesStatisticsView(generic.ListView):
-    template_name = 'P5/staffsite/Sales/all_stats.html'
-    context_object_name = 'stats'
-    model = Sales
 
 
 
