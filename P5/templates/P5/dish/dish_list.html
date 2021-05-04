@@ -34,6 +34,7 @@
                     <h2>{{ dish.typ.typ_name }}</h2>
 
                     {% for typ in dish_list  %}
+
                         {% if typ.typ.typ_name == dish.typ.typ_name %}
                             <div class="dish">
                             <h3>{{ typ.name }}</h3>

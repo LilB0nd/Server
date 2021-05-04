@@ -83,7 +83,7 @@ class DishView(generic.ListView):
             order_dish.amount = order_dish.amount + 1
             order_dish.save()
 
-        except Dish.DoesNotExist:
+        except Dish.DoesNotExist and OrderDetail.DoesNotExist:
             new_dish_to_order = OrderDetail()
             new_dish_to_order.Order = Order.objects.get(table_id=self.table_id)
             new_dish_to_order.Dish = Dish.objects.get(ID=dish_id)

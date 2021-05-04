@@ -24,7 +24,7 @@ SECRET_KEY = 'q$=k=gk8rg)wdf8sr@j%(pbyolb3-f_p)no31fhwrtg_d-7o2y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
 # Application definition
 
 INSTALLED_APPS = [
