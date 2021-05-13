@@ -77,13 +77,16 @@ class DishView(generic.ListView):
         order = Order.objects.get(table_id=self.table_id)
         dish_id = int(self.request.POST['dish_name'])
         dish_list = order.orderdetail_set.all()
-
+        print(dish_list)
         try:
+            print('ERROR')
+            print(dish_id)
+            print(self.table_id)
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
             order_dish.save()
 
-        except Dish.DoesNotExist:
+        except Dish.DoesNotExist and OrderDetail.DoesNotExist:
             new_dish_to_order = OrderDetail()
             new_dish_to_order.Order = Order.objects.get(table_id=self.table_id)
             new_dish_to_order.Dish = Dish.objects.get(ID=dish_id)
