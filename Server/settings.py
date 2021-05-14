@@ -109,7 +109,7 @@ ADMIN_REORDER = (
     {'app': 'P5', 'label': 'Rechnungen', 'models': ('P5.Bill',)},
     {'app': 'P5', 'label': 'Gerichte', 'models': ('P5.Dish', 'P5.DishTyp', 'P5.DishCategory')},
     {'app': 'P5', 'label': 'REST', 'models': ('P5.OrderDetail', 'P5.Sales')},
-   # {'app': 'auth', 'label': 'Gruppen & User', },
+    {'app': 'auth', 'label': 'Gruppen & User', },
 )
 
 # Internationalization

@@ -6,6 +6,8 @@ from django.utils import timezone
 
 class DishCategory(models.Model):
     category_name = models.CharField(max_length=99, verbose_name='Gerichtskategorie')
+    sequence = models.IntegerField(verbose_name='Reihenfolgen', default=3)
+
 
     def __str__(self):
         return str(self.category_name)
@@ -33,7 +35,8 @@ class Dish(models.Model):
     typ = models.ForeignKey(DishTyp, on_delete=models.SET_NULL, default=None, blank=True, null=True)
     name = models.CharField(max_length=99)
     description = models.TextField(max_length=512, blank=True)
-    price = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR')
+    currency = (('EUR', 'EURO/€'),)
+    price = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency)
     image = models.ImageField(blank=True, null=True)
 
     def __str__(self):
@@ -47,7 +50,47 @@ class Dish(models.Model):
 class Order(models.Model):
     dish_list = models.ManyToManyField(Dish, through='P5.OrderDetail')
     table_id = models.IntegerField(primary_key=True, unique=True)
+    choice = (('open', 'offen'), ('working', 'im Gange'), ('closed', 'abgeschlossen'))
+    status = models.CharField(choices=choice, max_length=30, default='open')
     confirmation = models.BooleanField(default=False)
+    comment = models.CharField(max_length=300, default=None, null=True, blank=True)
+    old_status = None
+
+    def save(self, *args, **kwargs):
+        super(Order, self).save(*args, **kwargs)
+        if self.pk:
+            order = self
+            if order.status == 'closed':
+
+                new_bill = Bill()
+                try:
+                    id = Bill.objects.get_queryset().last().ID + 1
+                except AttributeError:
+                    id = 1
+                new_bill.ID = id
+                new_bill.table_nr = order.table_id
+                new_bill.date = timezone.now()
+
+                total_price = self.calucalte_price(OrderDetail.objects.filter(Order__table_id=new_bill.table_nr))
+                new_bill.total_price_brutto = total_price
+                new_bill.given = 100
+                new_bill.tip = 10
+                new_bill.change = 0
+                new_bill.save()
+                for dish in OrderDetail.objects.all():
+                    BillDetail.objects.create(Bill=new_bill, Dish=dish.Dish, amount=dish.amount)
+                new_bill.save()
+
+                order.delete()
+            else:
+                super().save()
+
+    def calucalte_price(self, dish_list):
+        totalprice = 0
+        for dish in dish_list:
+            totalprice = totalprice + (dish.Dish.price * dish.amount)
+
+        return totalprice
 
     def __str__(self):
         return 'Tisch ' + str(self.table_id)
@@ -87,7 +130,7 @@ class Bill(models.Model):
                         verbose_name='Trinkgeld')
 
     def __str__(self):
-        return 'Rechnung' + str(self.ID)
+        return 'Rechnung ' + str(self.ID)
 
     class Meta:
         verbose_name = 'Rechnung'

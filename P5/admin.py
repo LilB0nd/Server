@@ -12,6 +12,7 @@ class BillDetailAdmin(admin.TabularInline):
     BillDetail.short_description = 'Rechnungdetails'
 
 class BillAdmin(admin.ModelAdmin):
+    list_display = ('ID', 'date',)
     inlines = [BillDetailAdmin,]
 
     def bill(self, obj):
@@ -71,7 +72,7 @@ class DishCategoryAdmin(admin.ModelAdmin):
 admin.site.register(Order, OrderAdmin)
 admin.site.register(OrderDetail)
 
-admin.site.register(Bill)
+admin.site.register(Bill, BillAdmin)
 admin.site.register(BillDetail)
 
 admin.site.register(DishTyp)
@@ -79,4 +80,5 @@ admin.site.register(Dish, DishAdmin)
 admin.site.register(DishCategory, DishCategoryAdmin)
 
 admin.site.register(Sales)
+
 
