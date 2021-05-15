@@ -54,6 +54,8 @@ class DishView(generic.ListView):
         context['list_typ'] = list_typ
         context['dish_list'] = dish_list
         context['list_category'] = list_category
+        context['table_id'] = table_id
+        print(table_id)
 
         self.create_new_order()
 
@@ -77,11 +79,8 @@ class DishView(generic.ListView):
         order = Order.objects.get(table_id=self.table_id)
         dish_id = int(self.request.POST['dish_name'])
         dish_list = order.orderdetail_set.all()
-        print(dish_list)
+
         try:
-            print('ERROR')
-            print(dish_id)
-            print(self.table_id)
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
             order_dish.save()
@@ -115,11 +114,33 @@ class CartView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         order = Order.objects.get(table_id=self.object.table_id)
         quantity = order.orderdetail_set.get_queryset()
+        full_price = self.get_price()[0]
+        order_details = self.get_price()[1]
 
         context['order'] = order
         context['quantity'] = quantity
+        context['full_price'] = full_price
+        context['order_details'] = order_details
+        print(self.get_price())
 
         return context
+
+    def get_price(self):
+        bestellung = [0, []]
+        order = Order.objects.get(table_id=self.object.table_id)
+        quantity = order.orderdetail_set.get_queryset()
+
+        for dish in quantity:
+            if dish.amount == 0:
+                pass
+            else:
+                fullprice = dish.amount * dish.Dish.price
+
+                order_list = [str(dish.amount), dish.Dish.name, str(fullprice)]
+                bestellung[0] = bestellung[0] + fullprice
+                bestellung[1].append(order_list)
+
+        return bestellung
 
 
 

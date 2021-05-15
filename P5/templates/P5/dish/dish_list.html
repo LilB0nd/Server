@@ -22,7 +22,7 @@
     {% for category in list_category%}
      <a href="#{{ category}}"style="color: #f1f1f1">{{ category}}</a>
     {% endfor %}
-    <a href="/P5/cart?order_id={{table_id}}">Warenkorb</a>
+    <a href="/P5/cart/{{table_id}}/">Warenkorb</a>
 
 </div>
 <div class="menu">
@@ -33,7 +33,6 @@
                 <div class="typ">
                     <h2>{{ dish.typ.typ_name }}</h2>
                     {% for typ in dish_list  %}
-
                         {% if typ.typ.typ_name == dish.typ.typ_name %}
                             <div class="dish">
                             <h3>{{ typ.name }}</h3>
