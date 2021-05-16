@@ -5,20 +5,29 @@
     <title> Bestellung</title>
 </head>
 <body>
-{% if order  %}
-    <ul>
-    <strong>{{ order }}</strong>
-    <p>Tischnummer: {{ order.table_id}}</p>
-    {% for dish in quantity %}
-        {% if dish.amount == 0 %}
+<div class="menu-bar">
+    <a href="/P5/Speisekarte/?table_id={{order.table_id}}">Zurück</a>
 
-        {% else %}
-      <p>{{ dish.amount }}x  {{ dish.Dish.name }} {{ dish.Dish.price }}</p>
-        {% endif %}
+</div>
+<div class="Table">
+    <h1>Tischnummer: {{ order.table_id }}</h1>
+</div>
+<div class="order">
+    {% for i in order_details %}
+
+       <p>
+           {{ i.0 }} x {{ i.1 }} {{ i.2 }}
+           <form action="" method="post">
+               {% csrf_token %}
+               <button name="remove" type="submit" value='{{ i.1 }}'>Entfernen</button>
+           </form>
+       </p>
     {% endfor %}
-    </ul>
-{%  endif %}
-<p>{{ order_details }}</p>
-<p>{{ full_price }}</p>
+    <p>{{ full_price }}</p>
+</div>
+<div class="actions">
+    <button name="Bestellen">Bestellen</button> <button name="Bezahlen">Bezahlen</button>
+</div>
+
 </body>
 </html>

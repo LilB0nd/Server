@@ -1,6 +1,5 @@
-from django.shortcuts import render
-from django.http import HttpResponse, JsonResponse
-from django.contrib import messages
+from django.shortcuts import render, redirect
+from django.http import HttpResponse
 from django.views import generic
 from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales
 
@@ -67,10 +66,9 @@ class DishView(generic.ListView):
         self.new_order.table_id = table_id  # set table number as new_order id
         self.new_order.save()  # save new order
 
-    def post(self, request, *args, **kwargs):
+    def post(self, *args, **kwargs):
         self.table_id = int(self.request.GET.get('table_id'))
         self.set_dishes_for_order()
-        messages.success(request, 'Erfolgreich hinzugefügt')
         respone = HttpResponse()
         respone.status_code = 204
         return respone
@@ -105,14 +103,16 @@ class DishView(generic.ListView):
             new_dish_stat.amount = amount
             new_dish_stat.save()
 
-class CartView(generic.DetailView):
+class CartView(generic.ListView):
     template_name = 'P5/dish/cart.html'
     context_object_name = 'order'
     model = Order
 
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        order = Order.objects.get(table_id=self.object.table_id)
+        self.order_id = self.kwargs.get('order_id')
+        order = Order.objects.get(table_id=self.order_id)
         quantity = order.orderdetail_set.get_queryset()
         full_price = self.get_price()[0]
         order_details = self.get_price()[1]
@@ -121,13 +121,12 @@ class CartView(generic.DetailView):
         context['quantity'] = quantity
         context['full_price'] = full_price
         context['order_details'] = order_details
-        print(self.get_price())
 
         return context
 
     def get_price(self):
         bestellung = [0, []]
-        order = Order.objects.get(table_id=self.object.table_id)
+        order = Order.objects.get(table_id=self.order_id)
         quantity = order.orderdetail_set.get_queryset()
 
         for dish in quantity:
@@ -142,7 +141,18 @@ class CartView(generic.DetailView):
 
         return bestellung
 
+    def post(self, request,  *args, **kwargs):
+        order_id = self.kwargs.get('order_id')
+        order = Order.objects.get(table_id=order_id)
+        quantity = order.orderdetail_set.get_queryset()
+        name = str(self.request.POST['remove'])
+        for dish in quantity:
+            if name == dish.Dish.name:
+                print(name)
+                dish.amount = dish.amount - 1
+                dish.save()
 
+        return redirect('/P5/cart/' + str(order_id) + '/')
 
 def index(request):
     return HttpResponse('<a href="/P5/staffsite/order/"> Bestellungen</a><a href="/P5/dishtest/"> Gerichte bestellen</a><a href="/P5/staffsite/statistics/"> Statistics</a>')
