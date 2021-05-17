@@ -222,4 +222,4 @@ class Finish(generic.TemplateView):
 
 def index(request):
     return render(request, "P5/Base/Index.html")
-#
+####
