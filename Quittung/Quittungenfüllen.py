@@ -1,26 +1,23 @@
 import smtplib  # Email
-from xhtml2pdf import pisa
 from email.mime.text import MIMEText  # email
 from email.mime.multipart import MIMEMultipart  # email
 from email.mime.base import MIMEBase  # email
 from email import encoders  # email
+import pdfkit
 
 
 class Receipt:
 
-    def converttopdf(self):
-        result_file = open("Beleg.pdf", "w+b")
+    def htmltopdf(self,url):
+        """
+        Wandel Quittungsseite in PDF um
+        :param url: URL der Quittung
+        """
 
-        # convert HTML to PDF
-        pisa_status = pisa.CreatePDF(
-            "Beleg.html",  # the HTML to convert
-            dest=result_file)  # file handle to recieve result
+        path_wkhtmltopdf = r"E:\wkhtmltopdf\bin\wkhtmltopdf.exe"
+        config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
-        # close output file
-        result_file.close()  # close output file
-
-        # return False on success and True on errors
-        return pisa_status.err
+        pdfkit.from_url(url, "YOS.pdf", configuration=config)
 
 
 class Mail:
@@ -34,7 +31,7 @@ class Mail:
         msg["To"] = email_receiver
         msg["Subject"] = subject
 
-        body = "this is your receipt"
+        body = "this is your receipt" # E-Mail text vielleicht etwas ausfürhlicher
         msg.attach(MIMEText(body, "plain"))  # plain= type | keine html oder sonst was sondern plainer text
 
         filename = "Beleg.pdf"
@@ -55,6 +52,5 @@ class Mail:
         server.quit()
 
 
-YOS = Receipt()
-YOS.converttopdf()
-NOS = Mail("yvo2@schule.bremen.de")
+
+#Receipt.htmltopdf("http://127.0.0.1:8000/P5/order/2/")

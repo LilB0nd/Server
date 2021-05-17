@@ -1,41 +1,9 @@
-from django.shortcuts import render
 from django.template.loader import get_template
 from django.shortcuts import render, redirect, reverse
 from django.http import HttpResponse
 from django.views import generic, View
-from io import BytesIO
-from xhtml2pdf import pisa
-from .models import Dish, Order, DishCategory, DishTyp
-from django.views import generic
 from .models import Dish, Order, DishCategory, DishTyp, Quantity, Table
 
-
-def render_to_pdf(template_src, context_dict: dict):
-    template = get_template(template_src)
-    html = template.render(context_dict)
-    result = BytesIO()
-    pdf = pisa.pisaDocument(BytesIO(html.encode("ISO-8859-1")), result)
-    if not pdf.err:
-        return HttpResponse(result.getvalue(), content_type="application/pdf")
-    return None
-
-
-class ViewPDF(View):
-    def get(self, request, *args, **kwargs):
-        zwisch = rechner(all_order_list)
-        Mwst_not_rounded = (zwisch * 0.19)
-        Mwst = round(Mwst_not_rounded, 2)
-        gsmt_not_rounded = (zwisch + Mwst)
-        gmst = round(gsmt_not_rounded, 2)
-        content = {
-            'all_orders_list': all_order_list,
-            'zwischen': zwisch,
-            'mehrwert': Mwst,
-            'gesamt': gmst
-        }
-
-        pdf = render_to_pdf("app/pdf_template", content)
-        return HttpResponse(pdf, content_type="application/pdf")
 
 
 class OrderView(generic.ListView):
@@ -62,31 +30,34 @@ class DetailOrderView(generic.DetailView):
         return context
 
 
-all_order_list = [('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10)]
-def rechner (all_order_list:list)-> float:
+all_order_list = [('Suppe', 3, 10), ('Suppe', 3, 10), ('Suppe', 3, 10), ('Suppe', 3, 10), ('Suppe', 3, 10),
+                  ('Suppe', 3, 10)]
 
+
+def rechner(all_order_list: list) -> float:
     price = 0
 
     for item in all_order_list:
-
-        price += item[1]*item[2]
+        price += item[1] * item[2]
 
     return price
 
-def beleg(request):
 
+def beleg(request):
     zwisch = rechner(all_order_list)
     Mwst_not_rounded = (zwisch * 0.19)
     Mwst = round(Mwst_not_rounded, 2)
     gsmt_not_rounded = (zwisch + Mwst)
     gmst = round(gsmt_not_rounded, 2)
     content = {
-        'all_orders_list' : all_order_list,
-        'zwischen' : zwisch,
+        'all_orders_list': all_order_list,
+        'zwischen': zwisch,
         'mehrwert': Mwst,
         'gesamt': gmst
     }
     return render(request, "P5/Rechnungen/belege.html", content)
+
+
 """
 def detail_order(request, order_id):
     order_list = Order.objects.get(Order_ID=order_id)
@@ -103,11 +74,11 @@ def detail_order(request, order_id):
         print(element.Dish.Dish_Price)
 """
 
+
 class DetailDishView(generic.DetailView):
     template_name = 'P5/dish/detail_dish.html'
     context_object_name = 'dish'
     model = Dish
-
 
 
 class DishView(generic.ListView):
@@ -155,6 +126,7 @@ class DishViewTEST(generic.ListView):
             new_quantity.save()
 
         return redirect('P5:DetailOrderView', pk=new_order.id)
+
 
 def index(request):
     return HttpResponse("Yvo kann absolut gar nichts")
