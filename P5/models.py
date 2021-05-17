@@ -123,8 +123,6 @@ class Bill(models.Model):
                                     verbose_name='Gesamtsumme')
     given = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
                        verbose_name='Übergeben')
-    tip = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
-                     null=True, blank=True, verbose_name='Trinkgeld')
     change = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
                         verbose_name='Rückgeld')
 

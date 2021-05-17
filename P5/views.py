@@ -51,12 +51,10 @@ class DishView(generic.ListView):
             else:
                 list_category.append(category.typ.dish_category)
 
-
         context['list_typ'] = list_typ
         context['dish_list'] = dish_list
         context['list_category'] = list_category
         context['table_id'] = table_id
-        print(table_id)
 
         self.create_new_order()
 
@@ -84,7 +82,7 @@ class DishView(generic.ListView):
         try:
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
-            order_dish.comment = order_dish.comment + '\n' + comment
+            order_dish.comment = comment
             order_dish.save()
 
         except Dish.DoesNotExist and OrderDetail.DoesNotExist:
@@ -107,6 +105,7 @@ class DishView(generic.ListView):
             new_dish_stat.Dish = dish
             new_dish_stat.amount = amount
             new_dish_stat.save()
+
 
 class CartView(generic.ListView):
     template_name = 'P5/dish/cart.html'
@@ -143,7 +142,6 @@ class CartView(generic.ListView):
                 order_list = [str(dish.amount), dish.Dish.name, str(fullprice), dish.comment]
                 bestellung[0] = bestellung[0] + fullprice
                 bestellung[1].append(order_list)
-                print(bestellung[1])
 
         return bestellung
 
@@ -165,13 +163,25 @@ class CartView(generic.ListView):
 
         elif "pay" in self.request.POST:
 
-            return render(request, "P5/Rechnungen/mail_input.html")
+            #ToDO  Max liste geben
 
-        elif "finish" in self.request.POST:
+            print(self.order_sorter(order_id))
 
-            print("hi")
+            return redirect('/P5/MailInput/' + str(order_id) + '/')
 
-            return render(request, "P5/Rechnungen/end.html")
+    def order_sorter(self, order_id)-> list:
+        order = Order.objects.get(table_id=order_id)
+        quantity = order.orderdetail_set.get_queryset()
+
+        sorted_order = []
+
+        for i in quantity:
+
+            order_list = (i.amount, i.Dish.name, str(i.Dish.price))
+            if not order_list[0] == 0:
+                sorted_order.append(order_list)
+
+        return sorted_order
 
     def remove(self, name, order):
 
@@ -179,12 +189,34 @@ class CartView(generic.ListView):
 
         for dish in quantity:
             if name == dish.Dish.name:
-                print(name)
                 dish.amount = dish.amount - 1
                 dish.save()
 
         return
 
+
+class MailInput(generic.TemplateView):
+
+    template_name = 'P5/Rechnungen/mail_input.html'
+
+    def post(self, request):
+
+        if "finish" in self.request.POST:
+            # ToDo
+            '''Anile´s Stuff'''
+
+            self.get_email()
+            return redirect('/P5/Finish/')
+
+    def get_email(self):
+
+        mail = self.request.POST['email']
+        print(mail)
+
+
+
+class Finish(generic.TemplateView):
+    template_name = 'P5/Rechnungen/end.html'
 
 
 

@@ -21,7 +21,8 @@
 
        </p>
         {% if i.3 %}
-            <p>Extrawünsch: <br>{{ i.3 }}</p>
+            <p>Extrawünsche:</p>
+            <p id="extra">{{ i.3 }}</p>
         {% endif %}
 
            <form action="" method="post">
@@ -37,7 +38,7 @@
         <button name="order" type="submit" value="True">Bestellen</button> <button name="pay">Bezahlen</button>
     </form>
 </div>
-<p>{{ order.status }}</p>
+<p>Die Bestellun ist noch: {{ order.status }}</p>
 
 </body>
 </html>

@@ -6,15 +6,15 @@
 </head>
 <body>
 <br for="name">Geben sie ihre E-Mail ein um ihre Quittung per Mail zu bekommen. </label>
+<form action="" method="post">
+    {% csrf_token %}
+        <input type="email" id="email" name="email" required maxlength="320" size="10">
 
-    <input type="email" id="mail" name="mail" required maxlength="320" size="10">
+        <p>Save the Trees</p>
 
-    <p>Save the Trees</p>
 
-    <form action="" method="post">
-        {% csrf_token %}
-            <button type="submit" name="finish">Bestätigen</button>
-    </form>
+        <button type="submit" name="finish">Bestätigen</button>
+</form>
 
 </body>
 </html>
