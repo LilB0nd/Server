@@ -74,7 +74,7 @@ class Order(models.Model):
                 total_price = self.calucalte_price(OrderDetail.objects.filter(Order__table_id=new_bill.table_nr))
                 new_bill.total_price_brutto = total_price
                 new_bill.given = 100
-                new_bill.tip = 10
+                new_bill.tip = 0
                 new_bill.change = 0
                 new_bill.save()
                 for dish in OrderDetail.objects.all():
@@ -127,7 +127,7 @@ class Bill(models.Model):
     tip = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
                      null=True, blank=True, verbose_name='Trinkgeld')
     change = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
-                        verbose_name='Trinkgeld')
+                        verbose_name='Rückgeld')
 
     def __str__(self):
         return 'Rechnung ' + str(self.ID)

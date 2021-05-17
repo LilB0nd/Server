@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Mail input</title>
+</head>
+<body>
+<br for="name">Geben sie ihre E-Mail ein um ihre Quittung per Mail zu bekommen. </label>
+
+    <input type="email" id="mail" name="mail" required
+       minlength="4" maxlength="8" size="10">
+
+    <p>Save the Trees</p>
+
+    <form action="" method="post">
+        {% csrf_token %}
+            <button type="submit" name="finish">Bestätigen</button>
+    </form>
+
+</body>
+</html>

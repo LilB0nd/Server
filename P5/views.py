@@ -3,33 +3,39 @@ from django.http import HttpResponse
 from django.views import generic
 from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales
 
+class Bill:
+    def rechner (self, all_order_list: list)-> float:
 
-all_order_list = [('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10)]
-def rechner (all_order_list:list)-> float:
+        price = 0
 
-    price = 0
+        for item in all_order_list:
 
-    for item in all_order_list:
+            price += item[1]*item[2]
 
-        price += item[1]*item[2]
+        return price
 
-    return price
+    def beleg(self, request, all_order_list, table_id):
 
-def beleg(request):
+        zwisch = self.rechner(all_order_list)
+        Mwst_not_rounded = (zwisch * 0.19)
+        Mwst = round(Mwst_not_rounded, 2)
+        gsmt_not_rounded = (zwisch + Mwst)
+        gmst = round(gsmt_not_rounded, 2)
 
-    zwisch = rechner(all_order_list)
-    Mwst_not_rounded = (zwisch * 0.19)
-    Mwst = round(Mwst_not_rounded, 2)
-    gsmt_not_rounded = (zwisch + Mwst)
-    gmst = round(gsmt_not_rounded, 2)
-    content = {
-        'all_orders_list' : all_order_list,
-        'zwischen' : zwisch,
-        'mehrwert': Mwst,
-        'gesamt': gmst
-    }
-    return render(request, "P5/Rechnungen/belege.html", content)
+        content = {
+            'all_orders_list': all_order_list,
+            'zwischen': zwisch,
+            'mehrwert': Mwst,
+            'gesamt': gmst,
+            'table': table_id
+        }
+        return render(request, "P5/Rechnungen/belege.html", content)
 
+
+    def mail_input(request):
+
+
+        return render(request, "P5/Rechnungen/mail_input.html")
 
 class DishView(generic.ListView):
     template_name = 'P5/dish/dish_list.html'
@@ -142,17 +148,47 @@ class CartView(generic.ListView):
         return bestellung
 
     def post(self, request,  *args, **kwargs):
+
         order_id = self.kwargs.get('order_id')
         order = Order.objects.get(table_id=order_id)
+
+        if "remove" in self.request.POST:
+            name = str(self.request.POST['remove'])
+            self.remove(name, order)
+            return redirect('/P5/cart/' + str(order_id) + '/')
+
+        elif "order" in self.request.POST:
+            order.confirmation = True
+            order.status = "working"
+            order.save()
+            return redirect('/P5/cart/' + str(order_id) + '/')
+
+        elif "pay" in self.request.POST:
+
+            return Bill.mail_input(request)
+
+        elif "finish" in self.request.POST:
+            print("hi")
+
+            return Bill.mail_input(request)
+
+
+
+
+
+    def remove(self, name, order):
+
         quantity = order.orderdetail_set.get_queryset()
-        name = str(self.request.POST['remove'])
+
         for dish in quantity:
             if name == dish.Dish.name:
                 print(name)
                 dish.amount = dish.amount - 1
                 dish.save()
 
-        return redirect('/P5/cart/' + str(order_id) + '/')
+        return
+
+
 
 def index(request):
     return HttpResponse('<a href="/P5/staffsite/order/"> Bestellungen</a><a href="/P5/dishtest/"> Gerichte bestellen</a><a href="/P5/staffsite/statistics/"> Statistics</a>')

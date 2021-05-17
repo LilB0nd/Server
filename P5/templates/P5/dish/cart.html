@@ -23,11 +23,15 @@
            </form>
        </p>
     {% endfor %}
-    <p>{{ full_price }}</p>
+    <h2>Gesamtpreis: {{ full_price }}</h2>
 </div>
 <div class="actions">
-    <button name="Bestellen">Bestellen</button> <button name="Bezahlen">Bezahlen</button>
+    <form action="" method="post">
+        {% csrf_token %}
+        <button name="order" type="submit" value="True">Bestellen</button> <button name="pay">Bezahlen</button>
+    </form>
 </div>
+<p>{{ order.status }}</p>
 
 </body>
 </html>
