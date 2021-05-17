@@ -16,7 +16,6 @@ import socket
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
@@ -37,6 +36,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'djmoney',
+    'admin_reorder'
 
 ]
 
@@ -48,6 +48,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'admin_reorder.middleware.ModelAdminReorder'
 ]
 
 ROOT_URLCONF = 'Server.urls'
@@ -55,7 +56,7 @@ ROOT_URLCONF = 'Server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')]
+        'DIRS': [os.path.join(BASE_DIR, 'templates//P5')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -102,6 +103,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
+# Admin Order
+ADMIN_REORDER = (
+    {'app': 'P5', 'label': 'Bestellungen', 'models': ('P5.Order',)},
+    {'app': 'P5', 'label': 'Rechnungen', 'models': ('P5.Bill',)},
+    {'app': 'P5', 'label': 'Gerichte', 'models': ('P5.Dish', 'P5.DishTyp', 'P5.DishCategory')},
+    {'app': 'P5', 'label': 'REST', 'models': ('P5.OrderDetail', 'P5.Sales')},
+    {'app': 'auth', 'label': 'Gruppen & User', },
+)
+
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
 
@@ -118,5 +128,12 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
-
 STATIC_URL = '/static/'
+
+MEDIA_URL = '/images/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'static/images')

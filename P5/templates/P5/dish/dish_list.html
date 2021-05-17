@@ -1,14 +1,60 @@
-{% for category in list_category %}
-    <h3><strong>{{ category }}</strong></h3>
-    {% for typ in list_typ %}
-        {% if category == typ.dish_category %}
-            <h4><strong>{{ typ.typ_name }}</strong></h4>
-        {% endif %}
-            {% for dish in dish_list %}
-                {% if dish.typ.dish_category == category %}
-                    {% if dish.typ.typ_name == typ.typ_name %}
-                    {% endif %}
-                {% endif %}
-            {% endfor %}
+
+<style>
+    .search-bar{
+        padding: 10px;
+        background: orange;
+        color: #f1f1f1;
+        position: fixed;
+        top: 0px;
+        width: 100%;
+    }
+
+    .menu {
+        padding: 15px;
+        background: antiquewhite;
+    }
+    .category{
+        background: orange;
+        color: antiquewhite;
+    }
+</style>
+<div class="search-bar">
+    {% for category in list_category%}
+     <a href="#{{ category}}"style="color: #f1f1f1">{{ category}}</a>
     {% endfor %}
-{% endfor %}
+    <a href="/P5/cart/{{table_id}}/">Warenkorb</a>
+
+</div>
+<div class="menu">
+    {%for category in list_category %}
+        <h1 class="category" id="{{ category }}">{{ category }}</h1>
+        {% for dish in dish_list %}
+            {% if dish.typ.dish_category == category%}
+                <div class="typ">
+                    <h2>{{ dish.typ.typ_name }}</h2>
+                    {% for typ in dish_list  %}
+                        {% if typ.typ.typ_name == dish.typ.typ_name %}
+                            <div class="dish">
+                            <h3>{{ typ.name }}</h3>
+                                {%  if typ.image %}
+                                <img src="{{ typ.image.url }}" alt="dish_img" width="350" height="200">
+                                {% endif %}
+                            <p>{{ typ.description }}</p>
+                            <p>{{ typ.price }}</p>
+                                <form  action="" method="post">
+                            {% csrf_token %}
+                            <button type="submit" name="dish_name" value={{ dish.ID }}>Hinzufügen</button>
+                            </form>
+
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+            {% endif %}
+
+        {% endfor %}
+    {% endfor %}
+</div>
+
+

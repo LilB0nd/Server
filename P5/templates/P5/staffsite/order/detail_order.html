@@ -1,8 +1,8 @@
-
+{{ quantity }}
 {% if order  %}
     <ul>
     <strong>{{ order }}</strong>
-    <p> {{ order.table_nr }}</p>
+    <p>Tischnummer: {{ order.table_id }}</p>
     {% for dish in quantity %}
         {% if dish.amount == 0 %}
 
@@ -12,5 +12,5 @@
     {% endfor %}
     </ul>
 {% else %}
-    <p>No Gerichte are available.</p>
+    <p>Bestellung {{ order.ID }} exestiert nicht</p>
 {% endif %}
