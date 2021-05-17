@@ -10,7 +10,7 @@ class Receipt:
 
     def htmltopdf(self, url):
         """
-        Wandel Quittungsseite in PDF um
+        Wandel Quittungsseite in PDF um lol
         :param url: URL der Quittung
         """
 
