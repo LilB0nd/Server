@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from djmoney.models.fields import MoneyField
 from django.utils import timezone
@@ -7,7 +8,6 @@ from django.utils import timezone
 class DishCategory(models.Model):
     category_name = models.CharField(max_length=99, verbose_name='Gerichtskategorie')
     sequence = models.IntegerField(verbose_name='Reihenfolgen', default=3)
-
 
     def __str__(self):
         return str(self.category_name)
@@ -19,8 +19,9 @@ class DishCategory(models.Model):
 
 class DishTyp(models.Model):
     typ_name = models.CharField(max_length=99, verbose_name='Gerichtsvariate')
-    dish_category = models.ForeignKey(DishCategory, on_delete=models.CASCADE, verbose_name='Gerichtskategorie',
-                                      null=True)
+    dish_category = models.ForeignKey(DishCategory, on_delete=models.PROTECT, verbose_name='Gerichtskategorie',
+                                      default='Allgemeines'
+                                      )
 
     def __str__(self):
         return self.typ_name
@@ -32,7 +33,7 @@ class DishTyp(models.Model):
 
 class Dish(models.Model):
     ID = models.AutoField(primary_key=True)
-    typ = models.ForeignKey(DishTyp, on_delete=models.SET_NULL, default=None, blank=True, null=True)
+    typ = models.ForeignKey(DishTyp, on_delete=models.PROTECT, default='Allgemein')
     name = models.CharField(max_length=99)
     description = models.TextField(max_length=512, blank=True)
     currency = (('EUR', 'EURO/€'),)
@@ -72,13 +73,12 @@ class Order(models.Model):
                 new_bill.date = timezone.now()
 
                 total_price = self.calucalte_price(OrderDetail.objects.filter(Order__table_id=new_bill.table_nr))
-                new_bill.total_price_brutto = total_price
-                new_bill.given = 100
-                new_bill.tip = 10
-                new_bill.change = 0
+                new_bill.total_price = total_price
+                new_bill.given = 0
                 new_bill.save()
                 for dish in OrderDetail.objects.all():
                     BillDetail.objects.create(Bill=new_bill, Dish=dish.Dish, amount=dish.amount)
+
                 new_bill.save()
 
                 order.delete()
@@ -120,14 +120,28 @@ class Bill(models.Model):
     date = models.DateField(default=timezone.now)
 
     currency = (('EUR', 'EURO €'),)
-    total_price_brutto = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
-                                    verbose_name='Gesamtsumme')
+    total_price = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
+                             verbose_name='Gesamtsumme')
     given = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
-                       verbose_name='Übergeben')
-    tip = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
-                     null=True, blank=True, verbose_name='Trinkgeld')
+                       verbose_name='Übergeben', blank=True, null=True)
     change = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
-                        verbose_name='Trinkgeld')
+                        verbose_name='Rückgeld', null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.pk:
+            print('HALLO')
+            if self.given != 0:
+                print(self.given)
+                print(self.total_price)
+                change = self.given - self.total_price
+                print(change)
+                if self.given >= self.total_price:
+                    self.change = change
+            super(Bill, self).save(*args, **kwargs)
+
+    def clean(self):
+        if self.given < self.total_price:
+            raise ValidationError({'given': 'Der übergebene Geldbetrag reicht nicht aus'})
 
     def __str__(self):
         return 'Rechnung ' + str(self.ID)

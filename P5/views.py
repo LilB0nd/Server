@@ -68,7 +68,6 @@ class DishView(generic.ListView):
     def post(self, request, *args, **kwargs):
         self.table_id = int(self.request.GET.get('table_id'))
         self.set_dishes_for_order()
-        messages.success(request, 'Erfolgreich hinzugefügt')
         respone = HttpResponse()
         respone.status_code = 204
         return respone
