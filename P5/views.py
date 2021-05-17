@@ -3,32 +3,34 @@ from django.http import HttpResponse
 from django.views import generic
 from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales
 
+class Bill:
 
-all_order_list = [('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10),('Suppe',3,10)]
-def rechner (all_order_list:list)-> float:
+    def rechner (self, all_order_list: list)-> float:
 
-    price = 0
+        price = 0
 
-    for item in all_order_list:
+        for item in all_order_list:
 
-        price += item[1]*item[2]
+            price += item[1]*item[2]
 
-    return price
+        return price
 
-def beleg(request):
+    def beleg(self, request, all_order_list, table_id):
 
-    zwisch = rechner(all_order_list)
-    Mwst_not_rounded = (zwisch * 0.19)
-    Mwst = round(Mwst_not_rounded, 2)
-    gsmt_not_rounded = (zwisch + Mwst)
-    gmst = round(gsmt_not_rounded, 2)
-    content = {
-        'all_orders_list' : all_order_list,
-        'zwischen' : zwisch,
-        'mehrwert': Mwst,
-        'gesamt': gmst
-    }
-    return render(request, "P5/Rechnungen/belege.html", content)
+        zwisch = self.rechner(all_order_list)
+        Mwst_not_rounded = (zwisch * 0.19)
+        Mwst = round(Mwst_not_rounded, 2)
+        gsmt_not_rounded = (zwisch + Mwst)
+        gmst = round(gsmt_not_rounded, 2)
+
+        content = {
+            'all_orders_list': all_order_list,
+            'zwischen': zwisch,
+            'mehrwert': Mwst,
+            'gesamt': gmst,
+            'table': table_id
+        }
+        return render(request, "P5/Rechnungen/belege.html", content)
 
 
 class DishView(generic.ListView):
@@ -49,12 +51,10 @@ class DishView(generic.ListView):
             else:
                 list_category.append(category.typ.dish_category)
 
-
         context['list_typ'] = list_typ
         context['dish_list'] = dish_list
         context['list_category'] = list_category
         context['table_id'] = table_id
-        print(table_id)
 
         self.create_new_order()
 
@@ -76,11 +76,13 @@ class DishView(generic.ListView):
     def set_dishes_for_order(self):
         order = Order.objects.get(table_id=self.table_id)
         dish_id = int(self.request.POST['dish_name'])
+        comment = self.request.POST['info']
         dish_list = order.orderdetail_set.all()
 
         try:
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
+            order_dish.comment = comment
             order_dish.save()
 
         except Dish.DoesNotExist and OrderDetail.DoesNotExist:
@@ -88,6 +90,7 @@ class DishView(generic.ListView):
             new_dish_to_order.Order = Order.objects.get(table_id=self.table_id)
             new_dish_to_order.Dish = Dish.objects.get(ID=dish_id)
             new_dish_to_order.amount = 1
+            new_dish_to_order.comment = comment
             new_dish_to_order.save()
 
     def save_statistic(self, dish, amount):
@@ -102,6 +105,7 @@ class DishView(generic.ListView):
             new_dish_stat.Dish = dish
             new_dish_stat.amount = amount
             new_dish_stat.save()
+
 
 class CartView(generic.ListView):
     template_name = 'P5/dish/cart.html'
@@ -135,24 +139,86 @@ class CartView(generic.ListView):
             else:
                 fullprice = dish.amount * dish.Dish.price
 
-                order_list = [str(dish.amount), dish.Dish.name, str(fullprice)]
+                order_list = [str(dish.amount), dish.Dish.name, str(fullprice), dish.comment]
                 bestellung[0] = bestellung[0] + fullprice
                 bestellung[1].append(order_list)
 
         return bestellung
 
     def post(self, request,  *args, **kwargs):
+
         order_id = self.kwargs.get('order_id')
         order = Order.objects.get(table_id=order_id)
+
+        if "remove" in self.request.POST:
+            name = str(self.request.POST['remove'])
+            self.remove(name, order)
+            return redirect('/P5/cart/' + str(order_id) + '/')
+
+        elif "order" in self.request.POST:
+            order.confirmation = True
+            order.status = "working"
+            order.save()
+            return redirect('/P5/cart/' + str(order_id) + '/')
+
+        elif "pay" in self.request.POST:
+
+            #ToDO  Max liste geben
+
+            print(self.order_sorter(order_id))
+
+            return redirect('/P5/MailInput/' + str(order_id) + '/')
+
+    def order_sorter(self, order_id)-> list:
+        order = Order.objects.get(table_id=order_id)
         quantity = order.orderdetail_set.get_queryset()
-        name = str(self.request.POST['remove'])
+
+        sorted_order = []
+
+        for i in quantity:
+
+            order_list = (i.amount, i.Dish.name, str(i.Dish.price))
+            if not order_list[0] == 0:
+                sorted_order.append(order_list)
+
+        return sorted_order
+
+    def remove(self, name, order):
+
+        quantity = order.orderdetail_set.get_queryset()
+
         for dish in quantity:
             if name == dish.Dish.name:
-                print(name)
                 dish.amount = dish.amount - 1
                 dish.save()
 
-        return redirect('/P5/cart/' + str(order_id) + '/')
+        return
+
+
+class MailInput(generic.TemplateView):
+
+    template_name = 'P5/Rechnungen/mail_input.html'
+
+    def post(self, request):
+
+        if "finish" in self.request.POST:
+            # ToDo
+            '''Anile´s Stuff'''
+
+            self.get_email()
+            return redirect('/P5/Finish/')
+
+    def get_email(self):
+
+        mail = self.request.POST['email']
+        print(mail)
+
+
+
+class Finish(generic.TemplateView):
+    template_name = 'P5/Rechnungen/end.html'
+
+
 
 def index(request):
     return render(request, "P5/Base/Index.html")

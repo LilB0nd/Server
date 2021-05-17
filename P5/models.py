@@ -53,7 +53,6 @@ class Order(models.Model):
     choice = (('open', 'offen'), ('working', 'im Gange'), ('closed', 'abgeschlossen'))
     status = models.CharField(choices=choice, max_length=30, default='open')
     confirmation = models.BooleanField(default=False)
-    comment = models.CharField(max_length=300, default=None, null=True, blank=True)
     old_status = None
 
     def save(self, *args, **kwargs):
@@ -74,7 +73,7 @@ class Order(models.Model):
                 total_price = self.calucalte_price(OrderDetail.objects.filter(Order__table_id=new_bill.table_nr))
                 new_bill.total_price_brutto = total_price
                 new_bill.given = 100
-                new_bill.tip = 10
+                new_bill.tip = 0
                 new_bill.change = 0
                 new_bill.save()
                 for dish in OrderDetail.objects.all():
@@ -104,7 +103,7 @@ class OrderDetail(models.Model):
     Order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Bestellung')
     Dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='Gericht')
     amount = models.IntegerField(verbose_name='Anzahl')
-
+    comment = models.CharField(max_length=300, default=None, null=True, blank=True)
     def __str__(self):
         return 'Bestellung ' +str(self.Order.table_id) + ' / ' + str(self.Dish.name)
 
@@ -124,10 +123,8 @@ class Bill(models.Model):
                                     verbose_name='Gesamtsumme')
     given = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
                        verbose_name='Übergeben')
-    tip = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
-                     null=True, blank=True, verbose_name='Trinkgeld')
     change = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
-                        verbose_name='Trinkgeld')
+                        verbose_name='Rückgeld')
 
     def __str__(self):
         return 'Rechnung ' + str(self.ID)

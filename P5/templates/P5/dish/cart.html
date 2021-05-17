@@ -71,20 +71,31 @@
     <h1 style="margin-top: 39px;">Tischnummer: {{ order.table_id }}</h1>
 </div>
 <div class="order">
+
     {% for i in order_details %}
        <p>
-           {{ i.0 }} x {{ i.1 }} {{ i.2 }}
+            {{ i.0 }} x {{ i.1 }} {{ i.2 }}
+
+       </p>
+        {% if i.3 %}
+            <p>Extrawünsche:</p>
+            <p id="extra">{{ i.3 }}</p>
+        {% endif %}
+
            <form action="" method="post">
                {% csrf_token %}
                <button name="remove" type="submit" value='{{ i.1 }}'>Entfernen</button>
            </form>
-       </p>
     {% endfor %}
-    <p>{{ full_price }}</p>
+    <h2>Gesamtpreis: {{ full_price }}</h2>
 </div>
 <div class="actions">
-    <button name="Bestellen">Bestellen</button> <button name="Bezahlen">Bezahlen</button>
+    <form action="" method="post">
+        {% csrf_token %}
+        <button name="order" type="submit" value="True">Bestellen</button> <button name="pay">Bezahlen</button>
+    </form>
 </div>
+<p>Die Bestellun ist noch: {{ order.status }}</p>
 
 </body>
 </html>
