@@ -156,3 +156,4 @@ class CartView(generic.ListView):
 
 def index(request):
     return render(request, "P5/Base/Index.html")
+#
