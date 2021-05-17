@@ -155,4 +155,4 @@ class CartView(generic.ListView):
         return redirect('/P5/cart/' + str(order_id) + '/')
 
 def index(request):
-    return HttpResponse('<a href="/P5/staffsite/order/"> Bestellungen</a><a href="/P5/dishtest/"> Gerichte bestellen</a><a href="/P5/staffsite/statistics/"> Statistics</a>')
+    return render(request, "P5/Base/Index.html")
