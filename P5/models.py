@@ -6,7 +6,7 @@ from django.utils import timezone
 
 
 class DishCategory(models.Model):
-    category_name = models.CharField(max_length=99, verbose_name='Gerichtskategorie')
+    category_name = models.CharField(max_length=99, verbose_name='Gerichtskategorie', default='Allgemein')
     sequence = models.IntegerField(verbose_name='Reihenfolgen', default=3)
 
     def __str__(self):
@@ -18,10 +18,8 @@ class DishCategory(models.Model):
 
 
 class DishTyp(models.Model):
-    typ_name = models.CharField(max_length=99, verbose_name='Gerichtsvariate')
-    dish_category = models.ForeignKey(DishCategory, on_delete=models.PROTECT, verbose_name='Gerichtskategorie',
-                                      default='Allgemeines'
-                                      )
+    typ_name = models.CharField(max_length=99, verbose_name='Gerichtsvariate', default='Allgemein')
+    dish_category = models.ForeignKey(DishCategory, on_delete=models.PROTECT, verbose_name='Gerichtskategorie')
 
     def __str__(self):
         return self.typ_name
@@ -33,7 +31,7 @@ class DishTyp(models.Model):
 
 class Dish(models.Model):
     ID = models.AutoField(primary_key=True)
-    typ = models.ForeignKey(DishTyp, on_delete=models.PROTECT, default='Allgemein')
+    typ = models.ForeignKey(DishTyp, on_delete=models.PROTECT)
     name = models.CharField(max_length=99)
     description = models.TextField(max_length=512, blank=True)
     currency = (('EUR', 'EURO/€'),)
@@ -54,7 +52,6 @@ class Order(models.Model):
     choice = (('open', 'offen'), ('working', 'im Gange'), ('closed', 'abgeschlossen'))
     status = models.CharField(choices=choice, max_length=30, default='open')
     confirmation = models.BooleanField(default=False)
-    comment = models.CharField(max_length=300, default=None, null=True, blank=True)
     old_status = None
 
     def save(self, *args, **kwargs):
@@ -76,7 +73,7 @@ class Order(models.Model):
                 new_bill.total_price = total_price
                 new_bill.given = 0
                 new_bill.save()
-                for dish in OrderDetail.objects.all():
+                for dish in OrderDetail.objects.filter(Order__table_id=new_bill.table_nr):
                     BillDetail.objects.create(Bill=new_bill, Dish=dish.Dish, amount=dish.amount)
 
                 new_bill.save()
@@ -104,7 +101,7 @@ class OrderDetail(models.Model):
     Order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Bestellung')
     Dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='Gericht')
     amount = models.IntegerField(verbose_name='Anzahl')
-
+    comment = models.CharField(max_length=300, default=None, null=True, blank=True)
     def __str__(self):
         return 'Bestellung ' +str(self.Order.table_id) + ' / ' + str(self.Dish.name)
 
@@ -127,12 +124,25 @@ class Bill(models.Model):
     change = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency,
                         verbose_name='Rückgeld', null=True, blank=True)
 
+    @staticmethod
+    def save_statistic(dish, amount):
+        try:
+            dish_stats = Sales.objects.get(Dish=dish)
+            dish_amount = dish_stats.amount
+            dish_stats.amount = dish_amount + amount
+            dish_stats.save()
+
+        except Sales.DoesNotExist:
+            new_dish_stat = Sales()
+            new_dish_stat.Dish = dish
+            new_dish_stat.amount = amount
+            new_dish_stat.save()
+
     def save(self, *args, **kwargs):
+        for dish in BillDetail.objects.filter(Bill=self):
+            self.save_statistic(dish.Dish, dish.amount)
         if self.pk:
-            print('HALLO')
             if self.given != 0:
-                print(self.given)
-                print(self.total_price)
                 change = self.given - self.total_price
                 print(change)
                 if self.given >= self.total_price:

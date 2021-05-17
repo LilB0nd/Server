@@ -24,7 +24,7 @@ SECRET_KEY = 'q$=k=gk8rg)wdf8sr@j%(pbyolb3-f_p)no31fhwrtg_d-7o2y'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -108,7 +108,7 @@ ADMIN_REORDER = (
     {'app': 'P5', 'label': 'Bestellungen', 'models': ('P5.Order',)},
     {'app': 'P5', 'label': 'Rechnungen', 'models': ('P5.Bill',)},
     {'app': 'P5', 'label': 'Gerichte', 'models': ('P5.Dish', 'P5.DishTyp', 'P5.DishCategory')},
-    {'app': 'P5', 'label': 'REST', 'models': ('P5.OrderDetail', 'P5.Sales', 'P5.BillDetail')},
+    {'app': 'P5', 'label': 'Statistik', 'models': ('P5.Sales',)},
     {'app': 'auth', 'label': 'Gruppen & User', },
 )
 
