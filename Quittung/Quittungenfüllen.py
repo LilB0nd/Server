@@ -8,7 +8,7 @@ import pdfkit
 
 class Receipt:
 
-    def htmltopdf(self,url):
+    def htmltopdf(self, url):
         """
         Wandel Quittungsseite in PDF um
         :param url: URL der Quittung
@@ -31,7 +31,7 @@ class Mail:
         msg["To"] = email_receiver
         msg["Subject"] = subject
 
-        body = "this is your receipt" # E-Mail text vielleicht etwas ausfürhlicher
+        body = "this is your receipt"  # E-Mail text vielleicht etwas ausfürhlicher
         msg.attach(MIMEText(body, "plain"))  # plain= type | keine html oder sonst was sondern plainer text
 
         filename = "Beleg.pdf"
@@ -51,6 +51,4 @@ class Mail:
         server.sendmail(email_user, email_receiver, text)
         server.quit()
 
-
-
-#Receipt.htmltopdf("http://127.0.0.1:8000/P5/order/2/")
+# Receipt.htmltopdf("http://127.0.0.1:8000/P5/order/2/")
