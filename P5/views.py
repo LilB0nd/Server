@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import generic
-from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales
+from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales, Bill
 
-class Bill:
+
+class Bill_view:
 
     def rechner (self, all_order_list: list)-> float:
 
@@ -13,12 +14,12 @@ class Bill:
 
             price += item[1]*item[2]
 
-        return price
+        return price *0.81
 
     def beleg(self, request, all_order_list, table_id):
 
         zwisch = self.rechner(all_order_list)
-        Mwst_not_rounded = (zwisch * 0.19)
+        Mwst_not_rounded = ((zwisch/0.81)*0.19)
         Mwst = round(Mwst_not_rounded, 2)
         gsmt_not_rounded = (zwisch + Mwst)
         gmst = round(gsmt_not_rounded, 2)
@@ -31,6 +32,26 @@ class Bill:
             'table': table_id
         }
         return render(request, "P5/Rechnungen/belege.html", content)
+
+    def quittung(self, request, all_order_list, table_id):
+        zwisch = self.rechner(all_order_list)
+        Mwst_not_rounded = ((zwisch / 0.81) * 0.19)
+        Mwst = round(Mwst_not_rounded, 2)
+        gsmt_not_rounded = (zwisch + Mwst)
+        gmst = round(gsmt_not_rounded, 2)
+        paid = Bill.given
+        change = Bill.change
+
+        content = {
+            'all_orders_list': all_order_list,
+            'zwischen': zwisch,
+            'mehrwert': Mwst,
+            'gesamt': gmst,
+            'table': table_id,
+            'paid': paid,
+            'change': change
+        }
+        return render(request, "P5/Rechnungen/Quittung.html", content)
 
 
 class DishView(generic.ListView):
@@ -164,10 +185,11 @@ class CartView(generic.ListView):
         elif "pay" in self.request.POST:
 
             #ToDO  Max liste geben
-
             print(self.order_sorter(order_id))
+            return Bill_view().beleg(request, self.order_sorter(order_id), order_id)
+            #print(self.order_sorter(order_id))
 
-            return redirect('/P5/MailInput/' + str(order_id) + '/')
+            #return redirect('/P5/MailInput/' + str(order_id) + '/')
 
     def order_sorter(self, order_id)-> list:
         order = Order.objects.get(table_id=order_id)
@@ -177,8 +199,8 @@ class CartView(generic.ListView):
 
         for i in quantity:
 
-            order_list = (i.amount, i.Dish.name, str(i.Dish.price))
-            if not order_list[0] == 0:
+            order_list = (i.Dish.name, i.amount, i.Dish.price)
+            if not order_list[1] == 0:
                 sorted_order.append(order_list)
 
         return sorted_order
@@ -193,6 +215,59 @@ class CartView(generic.ListView):
                 dish.save()
 
         return
+class BelegView(generic.TemplateView):
+
+    template_name = 'P5/Rechnungen/belege.html'
+
+    def rechner(self, all_order_list: list) -> float:
+        price = 0
+
+        for item in all_order_list:
+            price += item[1] * item[2]
+
+        return price * 0.81
+
+    def get_context_data(self, **kwargs):
+
+        table_id = int(self.request.GET.get('table_id'))
+        all_order_list = self.order_sorter(table_id)
+        table_id = Order.objects.get(table_id=table_id)
+
+        zwisch = self.rechner(all_order_list)
+        Mwst_not_rounded = ((zwisch / 0.81) * 0.19)
+        Mwst = round(Mwst_not_rounded, 2)
+        gsmt_not_rounded = (zwisch + Mwst)
+        gmst = round(gsmt_not_rounded, 2)
+
+        content = {
+            'all_orders_list': all_order_list,
+            'zwischen': zwisch,
+            'mehrwert': Mwst,
+            'gesamt': gmst,
+            'table': table_id
+        }
+        return content
+
+    def order_sorter(self, order_id)-> list:
+        order = Order.objects.get(table_id=order_id)
+        quantity = order.orderdetail_set.get_queryset()
+
+        sorted_order = []
+
+        for i in quantity:
+
+            order_list = (i.Dish.name, i.amount, i.Dish.price)
+            if not order_list[1] == 0:
+                sorted_order.append(order_list)
+
+        return sorted_order
+
+    def post(self, *args, **kwargs):
+
+        if "bill" in self.request.POST:
+
+            return redirect('/P5/MailInput/' + self.request.GET.get('table_id') + '/')
+
 
 
 class MailInput(generic.TemplateView):

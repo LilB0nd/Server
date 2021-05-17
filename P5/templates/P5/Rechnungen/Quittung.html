@@ -84,6 +84,12 @@
             <div>
                 <div style="width: 50%; float: left"><p class="Gesamt">Gesamtbetrag</p></div>
                 <div style="width: 50%; float: right"><p class ="Gesamt", style="text-align: right">{{gesamt}} </p></div>
+                <div style="width: 50%; float: left"><p class="Gesamt">Bezahlt</p></div>
+                <div style="width: 50%; float: right"><p class ="Gesamt", style="text-align: right">{{paid}} </p></div>
+                <div style="width: 50%; float: left"><p class="Gesamt">Rückgeld</p></div>
+                <div style="width: 50%; float: right"><p class ="Gesamt", style="text-align: right">{{change}} </p></div>
+
+
             </div>
             <p>------------------------------------------------</p>
             <div class="ende">
@@ -95,10 +101,6 @@
                 <p>Vielen Dank für ihre Bestellung</p>
             </div>
             <p>------------------------------------------------</p>
-            <form action="" method="post">
-                {% csrf_token %}
-                    <button name="bill">Quitung</button>
-            </form>
         </div>
     </body>
 </html>
