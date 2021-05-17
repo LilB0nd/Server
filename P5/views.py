@@ -4,6 +4,7 @@ from django.views import generic
 from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales
 
 class Bill:
+
     def rechner (self, all_order_list: list)-> float:
 
         price = 0
@@ -31,11 +32,6 @@ class Bill:
         }
         return render(request, "P5/Rechnungen/belege.html", content)
 
-
-    def mail_input(request):
-
-
-        return render(request, "P5/Rechnungen/mail_input.html")
 
 class DishView(generic.ListView):
     template_name = 'P5/dish/dish_list.html'
@@ -82,11 +78,13 @@ class DishView(generic.ListView):
     def set_dishes_for_order(self):
         order = Order.objects.get(table_id=self.table_id)
         dish_id = int(self.request.POST['dish_name'])
+        comment = self.request.POST['info']
         dish_list = order.orderdetail_set.all()
 
         try:
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
+            order_dish.comment = order_dish.comment + '\n' + comment
             order_dish.save()
 
         except Dish.DoesNotExist and OrderDetail.DoesNotExist:
@@ -94,6 +92,7 @@ class DishView(generic.ListView):
             new_dish_to_order.Order = Order.objects.get(table_id=self.table_id)
             new_dish_to_order.Dish = Dish.objects.get(ID=dish_id)
             new_dish_to_order.amount = 1
+            new_dish_to_order.comment = comment
             new_dish_to_order.save()
 
     def save_statistic(self, dish, amount):
@@ -141,9 +140,10 @@ class CartView(generic.ListView):
             else:
                 fullprice = dish.amount * dish.Dish.price
 
-                order_list = [str(dish.amount), dish.Dish.name, str(fullprice)]
+                order_list = [str(dish.amount), dish.Dish.name, str(fullprice), dish.comment]
                 bestellung[0] = bestellung[0] + fullprice
                 bestellung[1].append(order_list)
+                print(bestellung[1])
 
         return bestellung
 
@@ -165,16 +165,13 @@ class CartView(generic.ListView):
 
         elif "pay" in self.request.POST:
 
-            return Bill.mail_input(request)
+            return render(request, "P5/Rechnungen/mail_input.html")
 
         elif "finish" in self.request.POST:
+
             print("hi")
 
-            return Bill.mail_input(request)
-
-
-
-
+            return render(request, "P5/Rechnungen/end.html")
 
     def remove(self, name, order):
 
@@ -187,6 +184,7 @@ class CartView(generic.ListView):
                 dish.save()
 
         return
+
 
 
 

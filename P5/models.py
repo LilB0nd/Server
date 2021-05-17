@@ -53,7 +53,6 @@ class Order(models.Model):
     choice = (('open', 'offen'), ('working', 'im Gange'), ('closed', 'abgeschlossen'))
     status = models.CharField(choices=choice, max_length=30, default='open')
     confirmation = models.BooleanField(default=False)
-    comment = models.CharField(max_length=300, default=None, null=True, blank=True)
     old_status = None
 
     def save(self, *args, **kwargs):
@@ -104,7 +103,7 @@ class OrderDetail(models.Model):
     Order = models.ForeignKey(Order, on_delete=models.CASCADE, verbose_name='Bestellung')
     Dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='Gericht')
     amount = models.IntegerField(verbose_name='Anzahl')
-
+    comment = models.CharField(max_length=300, default=None, null=True, blank=True)
     def __str__(self):
         return 'Bestellung ' +str(self.Order.table_id) + ' / ' + str(self.Dish.name)
 

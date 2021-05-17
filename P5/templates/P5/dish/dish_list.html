@@ -39,11 +39,13 @@
                                 {%  if typ.image %}
                                 <img src="{{ typ.image.url }}" alt="dish_img" width="350" height="200">
                                 {% endif %}
+
                             <p>{{ typ.description }}</p>
                             <p>{{ typ.price }}</p>
                                 <form  action="" method="post">
                             {% csrf_token %}
-                            <button type="submit" name="dish_name" value={{ dish.ID }}>Hinzufügen</button>
+                                    <input type="text"  name="info" placeholder="Extra Wünsche">
+                                    <button type="submit" name="dish_name" value={{ dish.ID }}>Hinzufügen</button>
                             </form>
 
                             </div>
