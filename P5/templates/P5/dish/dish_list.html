@@ -31,15 +31,39 @@
     h1,h2,h3,p,a{
         font-family: Lato, sans-serif;
     }
-    button{
+    button {
         background: orange;
         color: white;
         left: 20.2%;
         position: absolute;
+        text-align: center;
+        transition: background 250ms ease-in-out,
+        transform 150ms ease;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+    }
+
+
+    button:hover,
+    button:focus {
+        background: #0053ba;
+        }
+
+    button:focus {
+        outline: 1px solid #fff;
+        outline-offset: -4px;
+    }
+
+    button:active {
+        transform: scale(0.99);
     }
     image{
         max-width: 100%;
         height: auto;
+    }
+    .left{
+        float: left;
+        margin-right: 10px;
     }
 </style>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
@@ -53,34 +77,28 @@
 <div class="menu">
     {%for category in list_category %}
         <h1 class="category" id="{{ category }}">{{ category }}</h1>
-        {% for typ in list_typ %}
-            {% if typ.dish_category == category %}
+        {% for dish in dish_list %}
+            {% if dish.typ.dish_category == category%}
                 <div class="typ">
-                <h2 style="text-align: center">{{ typ }}</h2>
-                {% for dish in dish_list %}
-                    {% if dish.typ == typ %}
-                       <div class="dish">
-                                    {%  if dish.image %}
-                                    <img src="{{ dish.image.url }}" alt="dish_img" width="350" height="200">
-                                    {% endif %}
-
-                                <p>{{ dish.description }}</p>
-                                <p>{{ dish.price }}</p>
+                    <h2 style="text-align: center">{{ dish.typ.typ_name }}</h2>
+                    {% for typ in dish_list  %}
+                        {% if typ.typ.typ_name == dish.typ.typ_name %}
+                            <div class="dish">
+                                <h3>{{ typ.name }}</h3>
+                                {%  if typ.image %}
+                                    <div class="left">
+                                    <img style="float: left;margin-right: 10px;" src="{{ typ.image.url }}" alt="dish_img" width="350" height="200"><p style="float: right; display: contents">{{ typ.description }}</p >
+                                    <br>
+                                    <input style="margin-top: 30px; width: 923px;" type="text"  name="info" placeholder="Extra Wünsche">
+                                    </div>
+                                {% endif %}
                                     <form  action="" method="post">
-                                {% csrf_token %}
-                                        <div style="border: 2px;">
-                                            <input type="text"  name="info" placeholder="Extra Wünsche">
-                                            <p style="margin-top: 10px;">{{ typ.price }}
-                                                <button style="float: start" type="submit" name="dish_name" value="{{ dish.ID }}">
-                                                    Hinzufügen
-                                                </button>
-                                            </p>
-                                        </div>
-
+                                    {% csrf_token %}
+                                    <div style="border: 2px;"><p style="margin-top: 10px;">{{ typ.price }}<button style="float: start" type="submit" name="dish_name" value="{{ dish.ID }}">Hinzufügen</button></p></div>
                                 </form>
-                       </div>
-                    {% endif %}
-                {% endfor %}
+                            </div>
+                        {% endif %}
+                    {% endfor %}
                 </div>
             {% endif %}
         {% endfor %}
