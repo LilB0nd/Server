@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import generic
 from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales, Bill
+from Quittung import Quittungenfüllen
 
 
 class Bill_view:
@@ -254,10 +255,15 @@ class BelegView(generic.TemplateView):
         return sorted_order
 
     def post(self, *args, **kwargs):
+        order = Order.objects.get(table_id=self.request.GET.get('table_id'))
 
         if "bill" in self.request.POST:
-            return redirect('/P5/MailInput/?table_id=' + str(self.request.GET.get('table_id')))
 
+            order.status = "closed"
+            order.save()
+            bill_id = (str(Bill.objects.last().ID))
+
+            return redirect('/P5/MailInput/?order_id='+bill_id)
 
 
 class MailInput(generic.TemplateView):
@@ -266,18 +272,29 @@ class MailInput(generic.TemplateView):
 
     def post(self, request):
 
+        order_id = self.request.GET.get('order_id')
+        bill = Bill.objects.get(ID=order_id)
+
         if "finish" in self.request.POST:
+
             # ToDo
             '''Anile´s Stuff'''
 
-            self.get_email()
-            return redirect('/P5/Quittung/?table_id=' + str(self.request.GET.get('table_id')))
-            #return redirect('/P5/Finish/')
+            if str(bill.given) != "0.00 €":
+                Quittungenfüllen.Mail(self.get_email(), "")
+
+                return redirect('/P5/Quittung/?order_id=' + str(self.request.GET.get('order_id')))
+
+            else:
+                respone = HttpResponse()
+                respone.status_code = 204
+                return respone
 
     def get_email(self):
 
         mail = self.request.POST['email']
-        print(mail)
+
+        return mail
 
 
 class QuittungView(generic.TemplateView):
@@ -293,39 +310,43 @@ class QuittungView(generic.TemplateView):
         return price * 0.81
 
     def get_context_data(self, **kwargs):
+        order_id = self.request.GET.get('order_id')
+        bill = Bill.objects.get(ID=order_id)
 
-        table_id = self.request.GET.get('table_id')
-        all_order_list = self.order_sorter(table_id)
-        table_id = Order.objects.get(table_id=table_id)
+        all_order_list = self.order_sorter(bill)
+
 
         zwisch = self.rechner(all_order_list)
         mwst_not_rounded = ((zwisch / 0.81) * 0.19)
         mwst = round(mwst_not_rounded, 2)
         gsmt_not_rounded = (zwisch + mwst)
         gmst = round(gsmt_not_rounded, 2)
-        paid = Bill.given
-        change = Bill.change
+        bill_id = bill.ID
+        paid = bill.given
+        change = bill.change
+        table_nr = bill.table_nr
 
         content = {
             'all_orders_list': all_order_list,
             'zwischen': zwisch,
             'mehrwert': mwst,
             'gesamt': gmst,
-            'table': table_id,
+            'table': table_nr,
             'paid': paid,
-            'change': change
+            'change': change,
+            'ID': bill_id
+
         }
         print(paid)
         print(change)
         return content
 
-    def order_sorter(self, order_id)-> list:
-        order = Order.objects.get(table_id=order_id)
-        quantity = order.orderdetail_set.get_queryset()
+    def order_sorter(self, bill)-> list:
+        bill_detail = bill.billdetail_set.get_queryset()
 
         sorted_order = []
 
-        for i in quantity:
+        for i in bill_detail:
 
             order_list = (i.Dish.name, i.amount, i.Dish.price)
             if not order_list[1] == 0:

@@ -14,14 +14,15 @@ class Receipt:
         :param url: URL der Quittung
         """
 
-        path_wkhtmltopdf = r"E:\wkhtmltopdf\bin\wkhtmltopdf.exe"
+        path_wkhtmltopdf = r"C:\Users\yvoda\OneDrive\Dokumente\GitHub\Server\Quittung\wkhtmltopdf\bin\wkhtmltopdf.exe"
         config = pdfkit.configuration(wkhtmltopdf=path_wkhtmltopdf)
 
-        pdfkit.from_url(url, "YOS.pdf", configuration=config)
+        pdfkit.from_url(url, "Beleg.pdf", configuration=config)
+
 
 
 class Mail:
-    def __init__(self, email_receiver):
+    def __init__(self, email_receiver, url):
         email_user = "triefenderkessel@gmail.com"
         pwd = "Sneaker123"
         subject = "Receipt"
@@ -30,6 +31,8 @@ class Mail:
         msg["From"] = email_user
         msg["To"] = email_receiver
         msg["Subject"] = subject
+
+        Receipt().htmltopdf(url)
 
         body = "this is your receipt"  # E-Mail text vielleicht etwas ausfürhlicher
         msg.attach(MIMEText(body, "plain"))  # plain= type | keine html oder sonst was sondern plainer text
