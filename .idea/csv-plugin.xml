@@ -10,6 +10,13 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/P5/templates/P5/dish/dish_list.html">
+          <value>
+            <Attribute>
+              <option name="separator" value=":" />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>

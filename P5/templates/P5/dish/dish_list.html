@@ -87,20 +87,17 @@
                             <div class="dish">
                                 <h3>{{ dish.name }}</h3>
                                 {%  if dish.image %}
-                                    <div>
-                                    <img style="margin-right: 10px;" src="{{ dish.image.url }}" alt="dish_img" width="350" height="200">
-                                        <p style="float: right; display: contents">{{ dish.description }}</p >
-                                    <br>
+                                    <div style="float: left">
+                                        <p><img style="margin-right: 10px; float: left;" src="{{ dish.image.url }}" alt="dish_img" width="350" height="200">{{ dish.description }}</p >
                                     </div>
                                     <form  action="" method="post">
                                     {% csrf_token %}
                                         <label>
-                                            <input style="margin-top: 30px; width: 923px;" type="text"  name="info" placeholder="Extra Wünsche">
+                                            <input style="margin-top: 30px; width: 350px;" type="text"  name="info" placeholder="Extra Wünsche">
                                         </label>
                                         <div style="border: 2px;"><p style="margin-top: 10px;">{{ dish.price }}<button style="float: start" type="submit" name="dish_name" value="{{ dish.ID }}">Hinzufügen</button></p></div>
                                 </form>
                                 {% endif %}
-
                             </div>
                         {% endif %}
                     {% endfor %}
