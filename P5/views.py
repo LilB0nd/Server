@@ -103,7 +103,10 @@ class DishView(generic.ListView):
         try:
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
-            order_dish.comment = comment
+            if order_dish.comment:
+                order_dish.comment = order_dish.comment + ', ' + comment
+            else:
+                order_dish.comment = comment
             order_dish.save()
 
         except Dish.DoesNotExist and OrderDetail.DoesNotExist:
@@ -114,18 +117,6 @@ class DishView(generic.ListView):
             new_dish_to_order.comment = comment
             new_dish_to_order.save()
 
-    def save_statistic(self, dish, amount):
-        try:
-            dish_stats = Sales.objects.get(Dish=dish)
-            dish_amount = dish_stats.amount
-            dish_stats.amount = dish_amount + amount
-            dish_stats.save()
-
-        except Sales.DoesNotExist:
-            new_dish_stat = Sales()
-            new_dish_stat.Dish = dish
-            new_dish_stat.amount = amount
-            new_dish_stat.save()
 
 
 class CartView(generic.ListView):
@@ -296,4 +287,5 @@ class Finish(generic.TemplateView):
 
 
 def index(request):
-    return HttpResponse('<a href="/P5/staffsite/order/"> Bestellungen</a><a href="/P5/dishtest/"> Gerichte bestellen</a><a href="/P5/staffsite/statistics/"> Statistics</a>')
+    return render(request, "P5/Base/Index.html")
+####

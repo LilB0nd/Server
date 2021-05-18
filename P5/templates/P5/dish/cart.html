@@ -2,7 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title> Bestellung</title>
+    <title>Bestellung</title>
+    <style>
+        .menu-bar{
+            padding: 10px;
+            background: orange;
+            color: #f1f1f1;
+            position: fixed;
+            top: 0px;
+            width: 100%;
+            left: 0;
+            z-index: 10;
+        }
+        a:hover {
+            cursor: pointer;
+        }
+        a {
+            color: white;
+            text-decoration: none;
+            text-transform: uppercase;
+        }
+        a:visited {
+          background-color: black;
+        }
+        body{
+            background-color: antiquewhite;
+        }
+        button {
+            display: inline-block;
+            border: none;
+            padding: 5px 10px;
+            margin: 0;
+            text-decoration: none;
+            background: orange;
+            color: White;
+            font-size: 16px;
+            cursor: pointer;
+            text-align: center;
+            transition: background 250ms ease-in-out,
+                        transform 150ms ease;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        button:hover,
+        button:focus {
+            background: #0053ba;
+        }
+
+        button:focus {
+            outline: 1px solid #fff;
+            outline-offset: -4px;
+        }
+
+        button:active {
+            transform: scale(0.99);
+        }
+        p{
+            font-size: 18px;
+        }
+    </style>
 </head>
 <body>
 <div class="menu-bar">
@@ -10,19 +69,17 @@
 
 </div>
 <div class="Table">
-    <h1>Tischnummer: {{ order.table_id }}</h1>
+    <h1 style="margin-top: 39px;">Tischnummer: {{ order.table_id }}</h1>
 </div>
 <div class="order">
 
     {% for i in order_details %}
-
        <p>
             {{ i.0 }} x {{ i.1 }} {{ i.2 }}
 
        </p>
         {% if i.3 %}
-            <p>Extrawünsche:</p>
-            <p id="extra">{{ i.3 }}</p>
+            <p id="extra"><b>Extrawünsche:</b> {{ i.3 }}</p>
         {% endif %}
 
            <form action="" method="post">
@@ -38,7 +95,7 @@
         <button name="order" type="submit" value="True">Bestellen</button> <button name="pay">Bezahlen</button>
     </form>
 </div>
-<p>Die Bestellun ist noch: {{ order.status }}</p>
+<p>Die Bestellung ist noch: {{ order.status }}</p>
 
 </body>
 </html>
