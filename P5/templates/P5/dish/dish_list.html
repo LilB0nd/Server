@@ -4,8 +4,9 @@
         background: orange;
         color: #f1f1f1;
         position: sticky;
-        top: 0px;
-        width: 100%;}
+        top: 0;
+        width: 100%;
+        z-index: 10;}
     a:hover {
         cursor: pointer;
     }
@@ -77,25 +78,29 @@
 <div class="menu">
     {%for category in list_category %}
         <h1 class="category" id="{{ category }}">{{ category }}</h1>
-        {% for dish in dish_list %}
-            {% if dish.typ.dish_category == category%}
+        {% for typ in list_typ %}
+            {% if typ.dish_category == category%}
                 <div class="typ">
-                    <h2 style="text-align: center">{{ dish.typ.typ_name }}</h2>
-                    {% for typ in dish_list  %}
-                        {% if typ.typ.typ_name == dish.typ.typ_name %}
+                    <h2 style="text-align: center">{{ typ }}</h2>
+                    {% for dish in dish_list  %}
+                        {% if dish.typ == typ %}
                             <div class="dish">
-                                <h3>{{ typ.name }}</h3>
-                                {%  if typ.image %}
-                                    <div class="left">
-                                    <img style="float: left;margin-right: 10px;" src="{{ typ.image.url }}" alt="dish_img" width="350" height="200"><p style="float: right; display: contents">{{ typ.description }}</p >
+                                <h3>{{ dish.name }}</h3>
+                                {%  if dish.image %}
+                                    <div>
+                                    <img style="margin-right: 10px;" src="{{ dish.image.url }}" alt="dish_img" width="350" height="200">
+                                        <p style="float: right; display: contents">{{ dish.description }}</p >
                                     <br>
-                                    <input style="margin-top: 30px; width: 923px;" type="text"  name="info" placeholder="Extra Wünsche">
                                     </div>
-                                {% endif %}
                                     <form  action="" method="post">
                                     {% csrf_token %}
-                                    <div style="border: 2px;"><p style="margin-top: 10px;">{{ typ.price }}<button style="float: start" type="submit" name="dish_name" value="{{ dish.ID }}">Hinzufügen</button></p></div>
+                                        <label>
+                                            <input style="margin-top: 30px; width: 923px;" type="text"  name="info" placeholder="Extra Wünsche">
+                                        </label>
+                                        <div style="border: 2px;"><p style="margin-top: 10px;">{{ dish.price }}<button style="float: start" type="submit" name="dish_name" value="{{ dish.ID }}">Hinzufügen</button></p></div>
                                 </form>
+                                {% endif %}
+
                             </div>
                         {% endif %}
                     {% endfor %}

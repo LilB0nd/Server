@@ -82,9 +82,11 @@ class DishView(generic.ListView):
         try:
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
-            order_dish.comment = comment
+            if order_dish.comment:
+                order_dish.comment = order_dish.comment + ', ' + comment
+            else:
+                order_dish.comment = comment
             order_dish.save()
-
 
         except Dish.DoesNotExist and OrderDetail.DoesNotExist:
             new_dish_to_order = OrderDetail()
