@@ -6,7 +6,7 @@ from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales, Bill
 
 class Bill_view:
 
-    def rechner (self, all_order_list: list)-> float:
+    def rechner (self, all_order_list):
 
         price = 0
 
@@ -109,6 +109,7 @@ class DishView(generic.ListView):
                 order_dish.comment = comment
             order_dish.save()
 
+
         except Dish.DoesNotExist and OrderDetail.DoesNotExist:
             new_dish_to_order = OrderDetail()
             new_dish_to_order.Order = Order.objects.get(table_id=self.table_id)
@@ -176,11 +177,8 @@ class CartView(generic.ListView):
         elif "pay" in self.request.POST:
 
             #ToDO  Max liste geben
-            print(self.order_sorter(order_id))
-            return Bill_view().beleg(request, self.order_sorter(order_id), order_id)
-            #print(self.order_sorter(order_id))
+            return redirect('/P5/Beleg/?table_id=' + str(order_id))
 
-            #return redirect('/P5/MailInput/' + str(order_id) + '/')
 
     def order_sorter(self, order_id)-> list:
         order = Order.objects.get(table_id=order_id)
@@ -206,6 +204,8 @@ class CartView(generic.ListView):
                 dish.save()
 
         return
+
+
 class BelegView(generic.TemplateView):
 
     template_name = 'P5/Rechnungen/belege.html'
@@ -220,20 +220,20 @@ class BelegView(generic.TemplateView):
 
     def get_context_data(self, **kwargs):
 
-        table_id = int(self.request.GET.get('table_id'))
+        table_id = self.request.GET.get('table_id')
         all_order_list = self.order_sorter(table_id)
         table_id = Order.objects.get(table_id=table_id)
 
         zwisch = self.rechner(all_order_list)
-        Mwst_not_rounded = ((zwisch / 0.81) * 0.19)
-        Mwst = round(Mwst_not_rounded, 2)
-        gsmt_not_rounded = (zwisch + Mwst)
+        mwst_not_rounded = ((zwisch / 0.81) * 0.19)
+        mwst = round(mwst_not_rounded, 2)
+        gsmt_not_rounded = (zwisch + mwst)
         gmst = round(gsmt_not_rounded, 2)
 
         content = {
             'all_orders_list': all_order_list,
             'zwischen': zwisch,
-            'mehrwert': Mwst,
+            'mehrwert': mwst,
             'gesamt': gmst,
             'table': table_id
         }
@@ -256,8 +256,7 @@ class BelegView(generic.TemplateView):
     def post(self, *args, **kwargs):
 
         if "bill" in self.request.POST:
-
-            return redirect('/P5/MailInput/' + self.request.GET.get('table_id') + '/')
+            return redirect('/P5/MailInput/?table_id=' + str(self.request.GET.get('table_id')))
 
 
 
@@ -272,13 +271,67 @@ class MailInput(generic.TemplateView):
             '''Anile´s Stuff'''
 
             self.get_email()
-            return redirect('/P5/Finish/')
+            return redirect('/P5/Quittung/?table_id=' + str(self.request.GET.get('table_id')))
+            #return redirect('/P5/Finish/')
 
     def get_email(self):
 
         mail = self.request.POST['email']
         print(mail)
 
+
+class QuittungView(generic.TemplateView):
+
+    template_name = 'P5/Rechnungen/Quittung.html'
+
+    def rechner(self, all_order_list: list) -> float:
+        price = 0
+
+        for item in all_order_list:
+            price += item[1] * item[2]
+
+        return price * 0.81
+
+    def get_context_data(self, **kwargs):
+
+        table_id = self.request.GET.get('table_id')
+        all_order_list = self.order_sorter(table_id)
+        table_id = Order.objects.get(table_id=table_id)
+
+        zwisch = self.rechner(all_order_list)
+        mwst_not_rounded = ((zwisch / 0.81) * 0.19)
+        mwst = round(mwst_not_rounded, 2)
+        gsmt_not_rounded = (zwisch + mwst)
+        gmst = round(gsmt_not_rounded, 2)
+        paid = Bill.given
+        change = Bill.change
+
+        content = {
+            'all_orders_list': all_order_list,
+            'zwischen': zwisch,
+            'mehrwert': mwst,
+            'gesamt': gmst,
+            'table': table_id,
+            'paid': paid,
+            'change': change
+        }
+        print(paid)
+        print(change)
+        return content
+
+    def order_sorter(self, order_id)-> list:
+        order = Order.objects.get(table_id=order_id)
+        quantity = order.orderdetail_set.get_queryset()
+
+        sorted_order = []
+
+        for i in quantity:
+
+            order_list = (i.Dish.name, i.amount, i.Dish.price)
+            if not order_list[1] == 0:
+                sorted_order.append(order_list)
+
+        return sorted_order
 
 
 class Finish(generic.TemplateView):

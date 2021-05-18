@@ -90,6 +90,7 @@
                                     <div style="float: left">
                                         <p><img style="margin-right: 10px; float: left;" src="{{ dish.image.url }}" alt="dish_img" width="350" height="200">{{ dish.description }}</p >
                                     </div>
+                                    {% endif %}
                                     <form  action="" method="post">
                                     {% csrf_token %}
                                         <label>
@@ -97,7 +98,7 @@
                                         </label>
                                         <div style="border: 2px;"><p style="margin-top: 10px;">{{ dish.price }}<button style="float: start" type="submit" name="dish_name" value="{{ dish.ID }}">Hinzufügen</button></p></div>
                                 </form>
-                                {% endif %}
+
                             </div>
                         {% endif %}
                     {% endfor %}
