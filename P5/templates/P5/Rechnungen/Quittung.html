@@ -22,6 +22,14 @@
             .Gesamt{
                 font-size: 20px;
                 font-weight: bold;
+                margin-bottom: 1px;
+                margin-top: 1px;
+            }
+
+            .Payment {
+                font-size: 16px;
+                font-weight: bold;
+                margin-bottom: -8px;
             }
             .ende{
                 text-align: left;
@@ -84,10 +92,10 @@
             <div>
                 <div style="width: 50%; float: left"><p class="Gesamt">Gesamtbetrag</p></div>
                 <div style="width: 50%; float: right"><p class ="Gesamt", style="text-align: right">{{gesamt}} </p></div>
-                <div style="width: 50%; float: left"><p class="Gesamt">Bezahlt</p></div>
-                <div style="width: 50%; float: right"><p class ="Gesamt", style="text-align: right">{{paid}} </p></div>
-                <div style="width: 50%; float: left"><p class="Gesamt">Rückgeld</p></div>
-                <div style="width: 50%; float: right"><p class ="Gesamt", style="text-align: right">{{change}} </p></div>
+                <div style="width: 50%; float: left"><p class="Payment">Bezahlt</p></div>
+                <div style="width: 50%; float: right"><p class ="Payment", style="text-align: right">{{paid}} </p></div>
+                <div style="width: 50%; float: left"><p class="Payment">Rückgeld</p></div>
+                <div style="width: 50%; float: right"><p class ="Payment", style="text-align: right">{{change}} </p></div>
 
 
             </div>
@@ -95,10 +103,10 @@
             <div class="ende">
                 <div id="time"></div>
                 <p style="margin-bottom: -10px;">TischNr: {{ table }}</p>
-                <p style="margin-bottom: -10px;">Belegnummer: Platzhalter</p>
+                <p style="margin-bottom: -10px;">Belegnummer: {{ ID }}</p>
             </div>
             <div class="footer">
-                <p>Vielen Dank für ihre Bestellung</p>
+                <p>Vielen Dank für ihren Besuch</p>
             </div>
             <p>------------------------------------------------</p>
         </div>
