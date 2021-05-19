@@ -38,7 +38,7 @@ class Mail:
         msg.attach(MIMEText(body, "plain"))  # plain= type | keine html oder sonst was sondern plainer text
 
         filename = "Beleg.pdf"
-        attachment = open(filename)
+        attachment = open(filename, "rb")
 
         part = MIMEBase("application", "octet-stream")
         part.set_payload(attachment.read())

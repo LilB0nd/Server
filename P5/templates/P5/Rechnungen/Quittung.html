@@ -66,19 +66,19 @@
 
     <body onload="uhr();">
         <div class="wrapper">
-            <p>------------------------------------------------</p>
+            <p>-------------------------------------------</p>
             <div>
                 <p class="Firma">Triefender Kessel</p>
                 <p class="Firma">Am Musterweg 4 82133 Muster</p>
             </div>
-            <p>------------------------------------------------</p>
+            <p>-------------------------------------------</p>
             {% for dish,amount,price in all_orders_list %}
             <div>
                 <div class="row", style="width: 50%; float: left"><p>{{dish}} {{ amount }}x</p></div>
                 <div class="row", style="width: 50%; float: right"><p style="text-align: right">{{price}} </p></div>
             </div>
             {% endfor %}
-            <p>------------------------------------------------</p>
+            <p>-------------------------------------------</p>
             <div>
                 <div style="width: 50%; float: left"><p>Zwischensumme</p></div>
                 <div style="width: 50%; float: right"><p style="text-align: right;">{{zwischen}} </p></div>
@@ -88,7 +88,7 @@
                 <div style="width: 50%; float: right"><p style="text-align: right; margin-top: 0">{{mehrwert}} </p></div>
             </div>
 
-            <p>------------------------------------------------</p>
+            <p>-------------------------------------------</p>
             <div>
                 <div style="width: 50%; float: left"><p class="Gesamt">Gesamtbetrag</p></div>
                 <div style="width: 50%; float: right"><p class ="Gesamt", style="text-align: right">{{gesamt}} </p></div>
@@ -99,7 +99,7 @@
 
 
             </div>
-            <p>------------------------------------------------</p>
+            <p>-------------------------------------------</p>
             <div class="ende">
                 <div id="time"></div>
                 <p style="margin-bottom: -10px;">TischNr: {{ table }}</p>
@@ -108,7 +108,7 @@
             <div class="footer">
                 <p>Vielen Dank für ihren Besuch</p>
             </div>
-            <p>------------------------------------------------</p>
+            <p>-------------------------------------------</p>
         </div>
     </body>
 </html>

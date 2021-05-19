@@ -281,7 +281,7 @@ class MailInput(generic.TemplateView):
             '''Anile´s Stuff'''
 
             if str(bill.given) != "0.00 €":
-                Quittungenfüllen.Mail(self.get_email(), "")
+                Quittungenfüllen.Mail(self.get_email(), '127.0.0.1:8000/P5/Quittung/?order_id=' + str(self.request.GET.get('order_id')))
 
                 return redirect('/P5/Quittung/?order_id=' + str(self.request.GET.get('order_id')))
 
