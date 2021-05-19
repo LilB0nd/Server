@@ -55,17 +55,18 @@ class Order(models.Model):
     old_status = None
 
     def save(self, *args, **kwargs):
+        # wird ausgelöst sobald eine Bestellung gespeichert wird, dabei egal ob erstellt oder geändert
         super(Order, self).save(*args, **kwargs)
         if self.pk:
             order = self
-            if order.status == 'closed':
+            if order.status == 'closed':  # Prüft ob der Status der Bestellung auf abgeschlossen gestellt würde
 
                 new_bill = Bill()
                 try:
-                    id = Bill.objects.get_queryset().last().ID + 1
-                except AttributeError:
-                    id = 1
-                new_bill.ID = id
+                    bill_id = Bill.objects.get_queryset().last().ID + 1  # nimmt sich die Bill ID der eben erstellen
+                except AttributeError:  # falls es zum Fehler kommt, heißt das, dass es die erste Rechnung war
+                    bill_id = 1
+                new_bill.ID = bill_id
                 new_bill.table_nr = order.table_id
                 new_bill.date = timezone.now()
 
@@ -77,12 +78,12 @@ class Order(models.Model):
                     BillDetail.objects.create(Bill=new_bill, Dish=dish.Dish, amount=dish.amount)
 
                 new_bill.save()
-
                 order.delete()
             else:
                 super().save()
 
-    def calucalte_price(self, dish_list):
+    @staticmethod
+    def calucalte_price(dish_list):  # errechnet den Gesamtpreis der Bestellung
         totalprice = 0
         for dish in dish_list:
             totalprice = totalprice + (dish.Dish.price * dish.amount)
@@ -102,9 +103,9 @@ class OrderDetail(models.Model):
     Dish = models.ForeignKey(Dish, on_delete=models.CASCADE, verbose_name='Gericht')
     amount = models.IntegerField(verbose_name='Anzahl')
     comment = models.CharField(max_length=300, default=None, null=True, blank=True)
-    def __str__(self):
-        return 'Bestellung ' +str(self.Order.table_id) + ' / ' + str(self.Dish.name)
 
+    def __str__(self):
+        return 'Bestellung ' + str(self.Order.table_id) + ' / ' + str(self.Dish.name)
 
     class Meta:
         verbose_name = 'Bestellungsdetail'
@@ -126,7 +127,7 @@ class Bill(models.Model):
 
     @staticmethod
     def save_statistic(dish, amount):
-        try:
+        try:  # Falls es noch keine Statisktik für das Gericht gibt
             dish_stats = Sales.objects.get(Dish=dish)
             dish_amount = dish_stats.amount
             dish_stats.amount = dish_amount + amount
@@ -139,13 +140,14 @@ class Bill(models.Model):
             new_dish_stat.save()
 
     def save(self, *args, **kwargs):
-        for dish in BillDetail.objects.filter(Bill=self):
+        # wird ausgelöst sobald eine Rechnung gespeichert wird, dabei egal ob erstellt oder geändert
+        for dish in BillDetail.objects.filter(Bill=self):  # fügt jedes Gericht der Rechnung der Statistik hinzu
             self.save_statistic(dish.Dish, dish.amount)
         if self.pk:
-            if self.given != 0:
-                change = self.given - self.total_price
-                print(change)
+            if self.given != 0:  # Sobald ein Wert eingegeben wird für den übergebenen Geldbetrag
+                change = self.given - self.total_price  # errechnet den Rückgabewert
                 if self.given >= self.total_price:
+                    # falls given kleiner ist als die Summe wird eine Fehlermeldung in der Methode c0lean hervorgerufen
                     self.change = change
             super(Bill, self).save(*args, **kwargs)
 
