@@ -34,7 +34,7 @@ class Mail:
 
         Receipt().htmltopdf(url)
 
-        body = "this is your receipt"  # E-Mail text vielleicht etwas ausfürhlicher
+        body = "Sehr geehrter Kunde, \n \nanbei ist ihr Beleg. \nVielen Dank für Ihren Besuch wir hoffen es hat ihnen geschmeckt und sehen Sie bald wieder.\n \nMit freundlichen Grüßen \n \nDer Triefende Kessel"  # E-Mail text vielleicht etwas ausfürhlicher
         msg.attach(MIMEText(body, "plain"))  # plain= type | keine html oder sonst was sondern plainer text
 
         filename = "Beleg.pdf"
