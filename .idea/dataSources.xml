@@ -30,7 +30,7 @@
       </libraries>
     </data-source>
     <data-source source="LOCAL" name="db [3]" uuid="6fc238a0-17ca-4947-b7ab-058ed98b7b44">
-      <driver-ref>sqlite.xerial</driver-ref>
+      <driver-ref>9d763789-596f-41a1-aae2-9447635627e5</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
       <jdbc-url>jdbc:sqlite:C:\Schule\Programmierpraktikum\Server\db.sqlite3</jdbc-url>
@@ -46,6 +46,20 @@
         </library>
         <library>
           <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/sqlite-jdbc-3.25.1.jar</url>
+        </library>
+      </libraries>
+    </data-source>
+    <data-source source="LOCAL" name="db [4]" uuid="28d7a14e-42bb-447b-b361-f12372519f25">
+      <driver-ref>sqlite.xerial</driver-ref>
+      <synchronize>true</synchronize>
+      <jdbc-driver>org.sqlite.JDBC</jdbc-driver>
+      <jdbc-url>jdbc:sqlite:$PROJECT_DIR$/db.sqlite3</jdbc-url>
+      <libraries>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/sqlite-jdbc-3.25.1.jar</url>
+        </library>
+        <library>
+          <url>file://$APPLICATION_CONFIG_DIR$/jdbc-drivers/Xerial SQLiteJDBC/3.25.1/license.txt</url>
         </library>
       </libraries>
     </data-source>

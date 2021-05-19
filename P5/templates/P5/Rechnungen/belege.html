@@ -1,5 +1,4 @@
 <html>
-
     <head>
         <meta charset="utf-8" />
         <title>Beleg</title>
@@ -35,8 +34,31 @@
             }
             .row{
                 display: table;
+            }
+            button {
+                background: black;
+                color: white;
+                text-align: center;
+                width: 255px;
+                transition: background 250ms ease-in-out,
+                transform 150ms ease;
+                -webkit-appearance: none;
+                -moz-appearance: none;
+            }
 
 
+            button:hover,
+            button:focus {
+                background: #0053ba;
+            }
+
+            button:focus {
+                outline: 1px solid #fff;
+                outline-offset: -4px;
+            }
+
+            button:active {
+                transform: scale(0.99);
             }
         </style>
         <script language="JavaScript">
