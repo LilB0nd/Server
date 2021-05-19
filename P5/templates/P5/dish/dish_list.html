@@ -26,7 +26,7 @@
                                     <h3>{{ dish.name }}</h3>
                                         <div style="float: left; width: 100%">
                                             <img style="margin-right: 10px; float: left;" src="{{ dish.image.url }}" alt="dish_img" width="350" height="200">
-                                            <p style="text-align: center">
+                                            <p>
                                                 {{ dish.description }}
                                             </p >
                                         </div>
@@ -37,8 +37,8 @@
                                                 <input style="margin-top: 30px; width: 350px;" type="text"  name="info" placeholder="Extra Wünsche">
                                             </label>
                                             <div style="width: 350px">
-                                                <p style="margin-top: 10px;">{{ dish.price }}
-                                                    <button style="float: right" type="submit" name="dish_name" value="{{ dish.ID }}">Hinzufügen</button>
+                                                <p  style="margin-top: 10px">{{ dish.price }}
+                                                    <button style="float: right;" type="submit" name="dish_name" value="{{ dish.ID }}">Hinzufügen</button>
                                                 </p>
                                             </div>
                                     </form>
