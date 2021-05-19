@@ -1,0 +1,12 @@
+a:hover {
+            cursor: pointer;
+        }
+        a {
+            color: dodgerblue;
+            text-decoration: none;
+            text-transform: uppercase;
+            margin-left: 5px;
+        }
+        a:visited {
+        background-color: black;
+        }

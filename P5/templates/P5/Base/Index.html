@@ -1,22 +1,10 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Index</title>
-    <style>
-        a:hover {
-            cursor: pointer;
-        }
-        a {
-            color: dodgerblue;
-            text-decoration: none;
-            text-transform: uppercase;
-            margin-left: 5px;
-        }
-        a:visited {
-        background-color: black;
-        }
-    </style>
+    <link rel="stylesheet" href="{% static 'css/index.css' %}">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-+0n0xVW2eSR5OomGNYDnhzAbDsOXxcvSN1TPprVMTNDbiYZCxYbOOl7+AMvyTG2x" crossorigin="anonymous">
 </head>
     <body>
@@ -27,9 +15,6 @@
         <a href="/P5/cart/1"> Warenkorb</a> <aside><p>Die Url für den Warenkorb an verschiedenen Tischen ist P5/cart/'Tischnummer'/
         </p></aside>
         <br>
-        <a href="/P5/MailInput"> Mail Input</a><aside><p>Hier geht es zur Zur Seite wo die Email eingetragen wird </p></aside>
-        <br>
-
         <a href="/admin/">Zur Admin Seite</a><aside><p> Für den Login ist der Benutzername: admin und das Passwort: Hallo1234</p></aside>
     </body>
 </html>

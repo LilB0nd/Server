@@ -1,0 +1,57 @@
+.Firma{
+    margin: 0px;
+    padding: 0px;
+    font-size: 20px;
+    text-align: center;
+}
+
+
+.wrapper{
+    max-width: 260px;
+    max-height: 600px;
+    margin: auto;
+
+}
+
+.Gesamt{
+    font-size: 20px;
+    font-weight: bold;
+}
+.ende{
+    text-align: left;
+    font-size: 10px;
+    margin-top: -15px;
+}
+.footer{
+    text-align: center;
+    font-size: 16px;
+    margin-top: 25px;
+}
+.row{
+    display: table;
+}
+button {
+    background: black;
+    color: white;
+    text-align: center;
+    width: 255px;
+    transition: background 250ms ease-in-out,
+    transform 150ms ease;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+
+
+button:hover,
+button:focus {
+    background: #0053ba;
+}
+
+button:focus {
+    outline: 1px solid #fff;
+    outline-offset: -4px;
+}
+
+button:active {
+    transform: scale(0.99);
+}
