@@ -282,8 +282,6 @@ class MailInput(generic.TemplateView):
 
         if "finish" in self.request.POST:
 
-            # ToDo
-            '''Anile´s Stuff'''
 
             if str(bill.given) != "0.00 €":
                 Quittungenfüllen.Mail(self.get_email(), '127.0.0.1:8000/P5/Quittung/?order_id=' + str(self.request.GET.get('order_id')))
@@ -341,8 +339,6 @@ class QuittungView(generic.TemplateView):
             'ID': bill_id
 
         }
-        print(paid)
-        print(change)
         return content
 
     def order_sorter(self, bill)-> list:

@@ -32,8 +32,8 @@
             <p>------------------------------------------------</p>
             {% for dish,amount,price in all_orders_list %}
             <div>
-                <div class="row", style="width: 50%; float: left"><p>{{dish}} {{ amount }}x</p></div>
-                <div class="row", style="width: 50%; float: right"><p style="text-align: right">{{price}} </p></div>
+                <div class="row", style="width: 70%; float: left"><p>{{dish}} {{ amount }}x</p></div>
+                <div class="row", style="width: 30%; float: right"><p style="text-align: right">{{price}} </p></div>
             </div>
             {% endfor %}
             <p>------------------------------------------------</p>
@@ -55,7 +55,6 @@
             <div class="ende">
                 <div id="time"></div>
                 <p style="margin-bottom: -10px;">TischNr: {{ table }}</p>
-                <p style="margin-bottom: -10px;">Belegnummer: Platzhalter</p>
             </div>
             <div class="footer">
                 <p>Vielen Dank für ihre Bestellung</p>
