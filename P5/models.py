@@ -36,7 +36,7 @@ class Dish(models.Model):
     description = models.TextField(max_length=512, blank=True)
     currency = (('EUR', 'EURO/€'),)
     price = MoneyField(max_digits=9, decimal_places=2, default_currency='EUR', currency_choices=currency)
-    image = models.ImageField(blank=True, null=True)
+    image = models.ImageField()
 
     def __str__(self):
         return str(self.name)

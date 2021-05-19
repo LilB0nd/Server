@@ -14,6 +14,5 @@ urlpatterns = [
             url(r'^MailInput/', views.MailInput.as_view(), name='Mail'),
             url(r'^Quittung/', views.QuittungView.as_view(), name='Quittung'),
             url(r'^Finish/', views.Finish.as_view(), name='Finish'),
-
-            url(r'^staffsite/belege/$', login_required(views.Bill_view.beleg), name='beleg')]
+]
 

@@ -1,18 +1,16 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from django.views import generic
-from .models import Dish, Order, DishCategory, DishTyp, OrderDetail, Sales, Bill
+from .models import Dish, Order, DishTyp, OrderDetail, Bill
 from Quittung import Quittungenfüllen
 
 
+@staticmethod
 class Bill_view:
 
     def rechner (self, all_order_list):
-
         price = 0
-
         for item in all_order_list:
-
             price += item[1]*item[2]
 
         return price *0.81
@@ -20,15 +18,15 @@ class Bill_view:
     def beleg(self, request, all_order_list, table_id):
 
         zwisch = self.rechner(all_order_list)
-        Mwst_not_rounded = ((zwisch/0.81)*0.19)
-        Mwst = round(Mwst_not_rounded, 2)
-        gsmt_not_rounded = (zwisch + Mwst)
+        mwst_not_rounded = ((zwisch/0.81)*0.19)
+        mwst = round(mwst_not_rounded, 2)
+        gsmt_not_rounded = (zwisch + mwst)
         gmst = round(gsmt_not_rounded, 2)
 
         content = {
             'all_orders_list': all_order_list,
             'zwischen': zwisch,
-            'mehrwert': Mwst,
+            'mehrwert': mwst,
             'gesamt': gmst,
             'table': table_id
         }
@@ -36,9 +34,9 @@ class Bill_view:
 
     def quittung(self, request, all_order_list, table_id):
         zwisch = self.rechner(all_order_list)
-        Mwst_not_rounded = ((zwisch / 0.81) * 0.19)
-        Mwst = round(Mwst_not_rounded, 2)
-        gsmt_not_rounded = (zwisch + Mwst)
+        mwst_not_rounded = ((zwisch / 0.81) * 0.19)
+        mwst = round(mwst_not_rounded, 2)
+        gsmt_not_rounded = (zwisch + mwst)
         gmst = round(gsmt_not_rounded, 2)
         paid = Bill.given
         change = Bill.change
@@ -46,7 +44,7 @@ class Bill_view:
         content = {
             'all_orders_list': all_order_list,
             'zwischen': zwisch,
-            'mehrwert': Mwst,
+            'mehrwert': mwst,
             'gesamt': gmst,
             'table': table_id,
             'paid': paid,
@@ -104,10 +102,15 @@ class DishView(generic.ListView):
         try:
             order_dish = dish_list.get(Order_id=self.table_id, Dish_id=dish_id)
             order_dish.amount = order_dish.amount + 1
-            if order_dish.comment:
-                order_dish.comment = order_dish.comment + ', ' + comment
-            else:
-                order_dish.comment = comment
+            if order_dish.comment and comment:
+                order_dish.comment = order_dish.comment + comment + ', '
+
+            elif order_dish.comment and not comment:
+                order_dish.comment = order_dish.comment + 'keine Extrawünsche, '
+
+            elif comment and not order_dish.comment:
+                order_dish.comment = comment + ', '
+
             order_dish.save()
 
 
@@ -116,16 +119,14 @@ class DishView(generic.ListView):
             new_dish_to_order.Order = Order.objects.get(table_id=self.table_id)
             new_dish_to_order.Dish = Dish.objects.get(ID=dish_id)
             new_dish_to_order.amount = 1
-            new_dish_to_order.comment = comment
+            new_dish_to_order.comment = 'keine Extrawünsche, '
             new_dish_to_order.save()
-
 
 
 class CartView(generic.ListView):
     template_name = 'P5/dish/cart.html'
     context_object_name = 'order'
     model = Order
-
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -176,33 +177,37 @@ class CartView(generic.ListView):
             return redirect('/P5/cart/' + str(order_id) + '/')
 
         elif "pay" in self.request.POST:
-
-            #ToDO  Max liste geben
+            # ToDO  Max liste geben
             return redirect('/P5/Beleg/?table_id=' + str(order_id))
 
 
-    def order_sorter(self, order_id)-> list:
+    @staticmethod
+    def order_sorter(order_id) -> list:
         order = Order.objects.get(table_id=order_id)
         quantity = order.orderdetail_set.get_queryset()
 
         sorted_order = []
-
         for i in quantity:
-
             order_list = (i.Dish.name, i.amount, i.Dish.price)
             if not order_list[1] == 0:
                 sorted_order.append(order_list)
 
         return sorted_order
 
-    def remove(self, name, order):
+    @staticmethod
+    def remove(name, order):
+        name = name
+        dish = OrderDetail.objects.get(Dish__name=name, Order__table_id=order.table_id)
+        dish.amount = dish.amount - 1
+        comment = dish.comment
+        splitted_comment = comment.split(', ')
+        splitted_comment.pop(-2)
+        comment = ', '.join(splitted_comment)
+        dish.comment = comment
 
-        quantity = order.orderdetail_set.get_queryset()
-
-        for dish in quantity:
-            if name == dish.Dish.name:
-                dish.amount = dish.amount - 1
-                dish.save()
+        dish.save()
+        if dish.amount == 0:
+            dish.delete()
 
         return
 
@@ -291,7 +296,6 @@ class MailInput(generic.TemplateView):
                 return respone
 
     def get_email(self):
-
         mail = self.request.POST['email']
 
         return mail
@@ -354,12 +358,9 @@ class QuittungView(generic.TemplateView):
 
         return sorted_order
 
-
 class Finish(generic.TemplateView):
     template_name = 'P5/Rechnungen/end.html'
 
 
-
 def index(request):
     return render(request, "P5/Base/Index.html")
-#####
